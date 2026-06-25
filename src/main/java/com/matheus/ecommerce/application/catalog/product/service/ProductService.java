@@ -1,0 +1,87 @@
+package com.matheus.ecommerce.application.catalog.product.service;
+
+import com.matheus.ecommerce.application.catalog.product.dto.request.CreateProductRequest;
+import com.matheus.ecommerce.application.catalog.product.dto.request.EditProductRequest;
+import com.matheus.ecommerce.application.catalog.product.dto.response.ProductResponse;
+import com.matheus.ecommerce.domain.catalog.product.entity.Product;
+import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+@Service
+@RequiredArgsConstructor
+public class ProductService {
+
+    private final ProductRepository productRepository;
+
+    public Page<ProductResponse> findAll(int pageNumber, int pageSize){
+        Pageable pageable = PageRequest.of(
+                pageNumber,
+                pageSize,
+
+                Sort.by(
+                        Sort.Order.desc("quantity"),
+                        Sort.Order.desc("createdAt")
+                )
+        );
+
+        return productRepository.findAll(pageable)
+                .map(this::toResponse);
+    }
+
+    public ProductResponse create(CreateProductRequest request){
+        Product product = new Product(
+                request.name(),
+                request.description(),
+                request.price(),
+                request.quantity()
+        );
+
+        productRepository.save(product);
+
+        return toResponse(product);
+    }
+
+    @Transactional
+    public void edit(Long id, EditProductRequest request){
+        Product product = getProductById(id);
+
+        product.edit(
+                request.name(),
+                request.description(),
+                request.price(),
+                request.quantity()
+        );
+    }
+
+    @Transactional
+    public void delete(Long id){
+        Product product = getProductById(id);
+        //check later if there are any relationships
+        productRepository.delete(product);
+    }
+
+    private Product getProductById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Product not found"));
+    }
+
+    private ProductResponse toResponse(Product product){
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getQuantity()
+        );
+    }
+}
