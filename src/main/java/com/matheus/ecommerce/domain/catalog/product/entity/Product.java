@@ -1,5 +1,6 @@
 package com.matheus.ecommerce.domain.catalog.product.entity;
 
+import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -34,6 +37,9 @@ public class Product {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @OneToMany(mappedBy = "product")
+    private List<CartItem> cartItem = new ArrayList<>();
 
     public Product(String name,String description, BigDecimal price, Integer quantity){
         this.name = name;

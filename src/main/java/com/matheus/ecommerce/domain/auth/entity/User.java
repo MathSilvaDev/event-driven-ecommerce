@@ -1,5 +1,6 @@
 package com.matheus.ecommerce.domain.auth.entity;
 
+import com.matheus.ecommerce.domain.sales.cart.entity.Cart;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,7 +36,6 @@ public class User {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-
     @ManyToMany
     @JoinTable(
             name = "user_role",
@@ -47,10 +47,15 @@ public class User {
     @OneToOne(mappedBy = "user")
     private RefreshToken refreshToken;
 
+    @OneToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
     public User(String username, String email, String password){
         this.username = username;
         this.email = email;
         this.password = password;
+        this.cart = new Cart(this);
     }
 
     public void addRoles(Collection<Role> roles){
