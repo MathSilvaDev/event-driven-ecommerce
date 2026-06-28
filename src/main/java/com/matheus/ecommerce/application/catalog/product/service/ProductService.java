@@ -3,6 +3,8 @@ package com.matheus.ecommerce.application.catalog.product.service;
 import com.matheus.ecommerce.application.catalog.product.dto.request.CreateProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.request.EditProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.response.ProductResponse;
+import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
+import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -72,6 +76,10 @@ public class ProductService {
         Product product = getProductById(id);
         //check later if there are any relationships
         productRepository.delete(product);
+    }
+
+    public CartItemResponse addToCart(UUID userId, CreateCartItemRequest request){
+        return null;
     }
 
     private Product getProductById(Long id) {

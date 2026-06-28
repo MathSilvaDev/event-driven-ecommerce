@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "cart_item")
 @Getter
@@ -25,7 +27,7 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @NotNull
+    @Column(nullable = false)
     private Integer quantity;
 
     public CartItem(Cart cart, Product product, Integer quantity){
