@@ -47,8 +47,7 @@ public class User {
     @OneToOne(mappedBy = "user")
     private RefreshToken refreshToken;
 
-    @OneToOne
-    @JoinColumn(name = "cart_id")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
 
     public User(String username, String email, String password){
