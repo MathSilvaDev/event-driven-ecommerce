@@ -28,6 +28,12 @@ public class ProductController {
                 .ok(productService.findAll(numberPage, sizePage));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> findById(@PathVariable Long id){
+        return ResponseEntity
+                .ok(productService.findById(id));
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponse> create(
@@ -38,7 +44,7 @@ public class ProductController {
                 .body(productService.create(request));
     }
 
-    @PatchMapping
+    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> edit(@PathVariable Long id,
                                      @Valid @RequestBody EditProductRequest request){
@@ -46,7 +52,7 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         productService.delete(id);

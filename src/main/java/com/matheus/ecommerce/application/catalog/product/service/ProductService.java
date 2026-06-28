@@ -37,6 +37,11 @@ public class ProductService {
                 .map(this::toResponse);
     }
 
+    public ProductResponse findById(Long id){
+        Product product = getProductById(id);
+        return toResponse(product);
+    }
+
     public ProductResponse create(CreateProductRequest request){
         Product product = new Product(
                 request.name(),
