@@ -2,12 +2,11 @@ package com.matheus.ecommerce.domain.sales.cart.entity;
 
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "cart_item")
@@ -19,6 +18,7 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;
@@ -34,5 +34,13 @@ public class CartItem {
         this.cart = cart;
         this.product = product;
         this.quantity = quantity;
+    }
+
+    public void addQuantity(int quantity){
+        this.quantity += quantity;
+    }
+
+    public void removeQuantity(int quantity){
+        this.quantity -= quantity;
     }
 }

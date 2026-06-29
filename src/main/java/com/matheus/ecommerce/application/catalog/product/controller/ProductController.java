@@ -68,7 +68,7 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/add")
+    @PostMapping("/cart/add")
     public ResponseEntity<CartItemResponse> addToCart(@AuthenticationPrincipal Jwt jwt,
                                                       @Valid @RequestBody CreateCartItemRequest request){
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
