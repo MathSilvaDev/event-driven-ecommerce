@@ -19,9 +19,11 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,6 +58,25 @@ class ProductServiceTest {
             assertEquals(1, response.getContent().size());
 
             Mockito.verify(productRepository).findAll(any(Pageable.class));
+        }
+    }
+
+    @Nested
+    class FindById{
+
+        @Test
+        void shouldFindByIdSuccessfully(){
+            Product product = newProduct();
+
+            Mockito.when(productRepository.findById(product.getId()))
+                    .thenReturn(Optional.of(product));
+
+            ProductResponse response = productService.findById(product.getId());
+
+            assertEquals(product.getId(), response.id());
+            assertEquals(product.getName(), response.name());
+
+            Mockito.verify(productRepository).findById(eq(product.getId()));
         }
     }
 
