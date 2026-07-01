@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -78,6 +79,18 @@ class ProductServiceTest {
 
             Mockito.verify(productRepository).findById(eq(product.getId()));
         }
+
+        @Test
+        void shouldThrowIfProductWasNotFoundById(){
+            Mockito.when(productRepository.findById(1L))
+                    .thenReturn(Optional.empty());
+
+            assertThrows(ResponseStatusException.class,
+                    () -> productService.findById(1L));
+
+            Mockito.verify(productRepository).findById(eq(1L));
+        }
+
     }
 
     private Product newProduct(){
