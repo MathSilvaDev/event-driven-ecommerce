@@ -1,5 +1,6 @@
 package com.matheus.ecommerce.application.catalog.product.service;
 
+import com.matheus.ecommerce.application.catalog.product.dto.request.CreateProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.response.ProductResponse;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
@@ -24,8 +25,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
@@ -77,7 +76,7 @@ class ProductServiceTest {
             assertEquals(product.getId(), response.id());
             assertEquals(product.getName(), response.name());
 
-            Mockito.verify(productRepository).findById(eq(product.getId()));
+            Mockito.verify(productRepository).findById(product.getId());
         }
 
         @Test
@@ -88,9 +87,34 @@ class ProductServiceTest {
             assertThrows(ResponseStatusException.class,
                     () -> productService.findById(1L));
 
-            Mockito.verify(productRepository).findById(eq(1L));
+            Mockito.verify(productRepository).findById(1L);
         }
 
+    }
+
+    @Nested
+    class Create{
+
+        @Test
+        void shouldCreateSuccessfully(){
+            Product product = newProduct();
+            CreateProductRequest request = new CreateProductRequest(
+                    product.getName(),
+                    product.getDescription(),
+                    product.getPrice(),
+                    product.getQuantity()
+            );
+
+            Mockito.when(productRepository.save(any(Product.class)))
+                    .thenReturn(product);
+
+            ProductResponse response = productService.create(request);
+
+            assertEquals(request.quantity(), response.quantity());
+            assertEquals(request.price(), response.price());
+
+            Mockito.verify(productRepository).save(any(Product.class));
+        }
     }
 
     private Product newProduct(){
