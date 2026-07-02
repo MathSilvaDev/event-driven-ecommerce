@@ -1,6 +1,7 @@
 package com.matheus.ecommerce.application.catalog.product.service;
 
 import com.matheus.ecommerce.application.catalog.product.dto.request.CreateProductRequest;
+import com.matheus.ecommerce.application.catalog.product.dto.request.EditProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.response.ProductResponse;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
@@ -9,6 +10,7 @@ import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -115,6 +117,37 @@ class ProductServiceTest {
 
             Mockito.verify(productRepository).save(any(Product.class));
         }
+    }
+
+    @Nested
+    class Edit{
+
+        @Test
+        void shouldEditSuccessfully(){
+            Product product = newProduct();
+            EditProductRequest request = new EditProductRequest(
+                    "new_name",
+                    null,
+                    BigDecimal.valueOf(25),
+                    30
+            );
+
+            Mockito.when(productRepository.findById(product.getId()))
+                    .thenReturn(Optional.of(product));
+
+            productService.edit(product.getId(), request);
+
+            assertEquals(request.name(), product.getName());
+            assertEquals("product_description", product.getDescription());
+            assertNotNull(product.getDescription());
+            assertEquals(request.name(), product.getName());
+            assertEquals(request.quantity(), product.getQuantity());
+
+            Mockito.verify(productRepository).findById(product.getId());
+        }
+
+        @Test
+        void shouldThrowProductWasNotFound(){}
     }
 
     private Product newProduct(){
