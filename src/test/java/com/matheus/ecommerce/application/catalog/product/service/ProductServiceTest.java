@@ -147,7 +147,29 @@ class ProductServiceTest {
         }
 
         @Test
-        void shouldThrowProductWasNotFound(){}
+        void shouldThrowProductWasNotFound(){
+            Product product = newProduct();
+            EditProductRequest request = new EditProductRequest(
+                    "new_name",
+                    null,
+                    BigDecimal.valueOf(25),
+                    30
+            );
+
+            Mockito.when(productRepository.findById(product.getId()))
+                    .thenReturn(Optional.empty());
+
+            assertThrows(ResponseStatusException.class,
+                    () -> productService.edit(product.getId(), request));
+
+            assertNotEquals(request.name(), product.getName());
+            assertNotNull(product.getDescription());
+            assertNull(request.description());
+            assertNotEquals(request.name(), product.getName());
+            assertNotEquals(request.quantity(), product.getQuantity());
+
+            Mockito.verify(productRepository).findById(product.getId());
+        }
     }
 
     private Product newProduct(){
