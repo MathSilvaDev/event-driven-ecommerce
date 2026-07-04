@@ -4,12 +4,14 @@ import com.matheus.ecommerce.application.catalog.product.dto.request.CreateProdu
 import com.matheus.ecommerce.application.catalog.product.dto.request.EditProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.response.ProductResponse;
 import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
+import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
 import com.matheus.ecommerce.domain.auth.entity.Role;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.enums.RoleName;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
+import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -233,6 +235,72 @@ class ProductServiceTest {
             Mockito.verify(productRepository).findById(productId);
         }
 
+        @Test
+        void shouldCreateIfCartItemDoesNotExist(){
+            User user = newUser();
+            Product product = newProduct();
+
+            UUID userId = user.getId();
+            Long productId = product.getId();
+
+            CreateCartItemRequest request =
+                    new CreateCartItemRequest(productId, 3);
+
+            Mockito.when(userRepository.findById(userId))
+                    .thenReturn(Optional.of(user));
+
+            Mockito.when(productRepository.findById(productId))
+                    .thenReturn(Optional.of(product));
+
+            Mockito.when(cartItemRepository.findByCartAndProduct(user.getCart(), product))
+                    .thenReturn(Optional.empty());
+
+            CartItemResponse response = productService.addToCart(userId, request);
+
+            assertEquals(request.productId(), response.productId());
+            assertEquals(request.quantity(), response.quantity());
+
+            Mockito.verify(userRepository).findById(userId);
+            Mockito.verify(productRepository).findById(productId);
+            Mockito.verify(cartItemRepository).findByCartAndProduct(user.getCart(), product);
+            Mockito.verify(cartItemRepository).save(any(CartItem.class));
+        }
+
+        @Test
+        void shouldUpdateIfItemCartExists(){
+            User user = newUser();
+            Product product = newProduct();
+            CartItem cartItem = new CartItem(
+                    user.getCart(), product, 2);
+
+            UUID userId = user.getId();
+            Long productId = product.getId();
+
+            int oldItemCartQuantity = cartItem.getQuantity();
+
+            CreateCartItemRequest request =
+                    new CreateCartItemRequest(productId, 3);
+
+            Mockito.when(userRepository.findById(userId))
+                    .thenReturn(Optional.of(user));
+
+            Mockito.when(productRepository.findById(productId))
+                    .thenReturn(Optional.of(product));
+
+            Mockito.when(cartItemRepository.findByCartAndProduct(user.getCart(), product))
+                    .thenReturn(Optional.of(cartItem));
+
+            CartItemResponse response = productService.addToCart(userId, request);
+
+            assertEquals(request.productId(), response.productId());
+            assertEquals((oldItemCartQuantity + request.quantity()), response.quantity());
+
+            Mockito.verify(userRepository).findById(userId);
+            Mockito.verify(productRepository).findById(productId);
+            Mockito.verify(cartItemRepository).findByCartAndProduct(user.getCart(), product);
+            Mockito.verify(cartItemRepository).save(cartItem);
+        }
+
     }
 
     private Product newProduct(){
@@ -248,7 +316,7 @@ class ProductServiceTest {
         User user = new User(
                 "user_name",
                 "email@email.com",
-                "raw-password"
+                "raw_password"
         );
         Role role = new Role(RoleName.BASIC);
         user.addRoles(List.of(role));
