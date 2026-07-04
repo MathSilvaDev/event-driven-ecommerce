@@ -172,6 +172,23 @@ class ProductServiceTest {
         }
     }
 
+    @Nested
+    class Delete{
+
+        @Test
+        void shouldDeleteSuccessfully(){
+            Product product = newProduct();
+
+            Mockito.when(productRepository.findById(product.getId()))
+                    .thenReturn(Optional.of(product));
+
+            productService.delete(product.getId());
+
+            Mockito.verify(productRepository).findById(product.getId());
+            Mockito.verify(productRepository).delete(product);
+        }
+    }
+
     private Product newProduct(){
         return new Product(
                 "product_name",
