@@ -4,38 +4,38 @@ import com.matheus.ecommerce.application.sales.cart.dto.request.ChangeItemQuanti
 import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemInfoResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
-import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
-import com.matheus.ecommerce.domain.sales.cart.entity.Cart;
 import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
-import com.matheus.ecommerce.domain.sales.cart.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
 
-    private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
 
-    public List<CartItemInfoResponse> findByUserCart(UUID userId){
+    public Page<CartItemInfoResponse> findByUserCart(UUID userId, int pageNumber, int pageSize){
         User user = getUserById(userId);
 
-        return user.getCart().getCartItems()
-                .stream()
-                .map(this::toInfoResponse)
-                .toList();
+        Pageable pageable = PageRequest.of(
+                pageNumber, pageSize,
+                Sort.by("product.name").ascending()
+        );
+
+        return cartItemRepository.findByCart(user.getCart(), pageable)
+                .map(this::toInfoResponse);
     }
 
     @Transactional
@@ -57,6 +57,18 @@ public class CartService {
         cartItem.addQuantity(request.quantity());
 
         return toInfoResponse(cartItem);
+    }
+
+    @Transactional
+    public void deleteCartItem(UUID userId, Long cartItemId){
+        User user = getUserById(userId);
+
+        CartItem cartItem = cartItemRepository.findByIdAndCart(cartItemId, user.getCart())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "cartItem not found"));
+
+        user.getCart().removeItem(cartItem);
+        cartItemRepository.delete(cartItem);
     }
 
     private User getUserById(UUID userId){

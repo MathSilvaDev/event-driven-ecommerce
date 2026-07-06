@@ -29,11 +29,11 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> findAll(
-            @RequestParam(defaultValue = "0") int numberPage,
-            @RequestParam(defaultValue = "20") int sizePage){
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageSize){
 
         return ResponseEntity
-                .ok(productService.findAll(numberPage, sizePage));
+                .ok(productService.findAll(pageNumber, pageSize));
     }
 
     @GetMapping("/{id}")
