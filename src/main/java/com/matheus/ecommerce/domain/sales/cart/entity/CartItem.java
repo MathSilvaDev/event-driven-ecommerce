@@ -1,6 +1,7 @@
 package com.matheus.ecommerce.domain.sales.cart.entity;
 
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
+import com.matheus.ecommerce.domain.sales.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,6 +30,10 @@ public class CartItem {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     public CartItem(Cart cart, Product product, Integer quantity){
         this.cart = cart;

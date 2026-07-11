@@ -4,7 +4,6 @@ import com.matheus.ecommerce.application.sales.cart.dto.request.ChangeItemQuanti
 import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemInfoResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
-import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
 import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
 import lombok.RequiredArgsConstructor;

@@ -11,7 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,7 +31,12 @@ public class CartController {
                 .ok(cartService.findByUserCart(userId, pageNumber, pageSize));
     }
 
-    @PostMapping
+//    @PostMapping
+//    public ResponseEntity<Void> createOrder(@AuthenticationPrincipal Jwt jwt){
+//
+//    }
+
+    @PostMapping("/change-quantity")
     public ResponseEntity<CartItemInfoResponse> changeQuantityCartItem(
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody ChangeItemQuantityRequest request){
