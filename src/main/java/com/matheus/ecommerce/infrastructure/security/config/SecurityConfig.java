@@ -35,6 +35,7 @@ public class SecurityConfig{
                                     .permitAll()
                                 .requestMatchers("/api/products/**").authenticated()
                                 .requestMatchers("/api/carts/**").authenticated()
+                                .requestMatchers("/api/orders/**").authenticated()
                                 .anyRequest().hasRole("ADMIN")
                 )
                 .build();

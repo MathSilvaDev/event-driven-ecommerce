@@ -28,7 +28,7 @@ public class Order {
     private User user;
 
     @OneToMany(mappedBy = "order", orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CartItem> cartItems = new ArrayList<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
     private OrderStatus status;
@@ -37,9 +37,9 @@ public class Order {
     @Column(updatable = false)
     private Instant createdAt;
 
-    public Order(User user, List<CartItem> cartItems){
+    public Order(User user, List<OrderItem> orderItem){
         this.user = user;
-        this.cartItems.addAll(cartItems);
+        this.orderItems.addAll(orderItem);
         this.status = OrderStatus.PENDING_PAYMENT;
     }
 }

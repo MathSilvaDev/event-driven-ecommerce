@@ -1,26 +1,20 @@
-package com.matheus.ecommerce.domain.sales.cart.entity;
+package com.matheus.ecommerce.domain.sales.order.entity;
 
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Table(name = "cart_item")
+@Table(name = "order_item")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CartItem {
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Setter
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -28,17 +22,13 @@ public class CartItem {
 
     @Column(nullable = false)
     private Integer quantity;
-    
-    private boolean isSelected = true;
 
-    public CartItem(Cart cart, Product product, Integer quantity){
-        this.cart = cart;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    public OrderItem(Product product, Integer quantity){
         this.product = product;
         this.quantity = quantity;
     }
-
-    public void addQuantity(int quantity){
-        this.quantity += quantity;
-    }
-
 }

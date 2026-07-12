@@ -91,7 +91,7 @@ public class JwtService {
         try {
             return jwtDecoder.decode(token);
         } catch (JwtException e) {
-            throw new InvalidRefreshTokenException(e);
+            throw new InvalidRefreshTokenException();
         }
     }
 }

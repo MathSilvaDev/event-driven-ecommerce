@@ -1,5 +1,6 @@
 package com.matheus.ecommerce.infrastructure.exception;
 
+import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
 import com.matheus.ecommerce.infrastructure.exception.dto.ApiError;
 import com.matheus.ecommerce.infrastructure.exception.jwt.InvalidRefreshTokenException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,12 @@ public class GlobalHandleException{
 
     @ExceptionHandler(InvalidRefreshTokenException.class)
     public ResponseEntity<ApiError> invalidRefreshTokenException(InvalidRefreshTokenException e){
-        return toResponse(e.getMessage(), e.getHttpStatus());
+        return toResponse(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiError> userNotFoundException(UserNotFoundException e){
+        return toResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
