@@ -1,11 +1,15 @@
 package com.matheus.ecommerce.application.sales.cart.controller;
 
 import com.matheus.ecommerce.application.sales.cart.dto.request.ChangeItemQuantityRequest;
+import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
 import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemInfoResponse;
+import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
 import com.matheus.ecommerce.application.sales.cart.service.CartService;
 import com.matheus.ecommerce.common.security.AuthUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -31,10 +35,15 @@ public class CartController {
                 .ok(cartService.findByUserCart(userId, pageNumber, pageSize));
     }
 
-//    @PostMapping
-//    public ResponseEntity<Void> createOrder(@AuthenticationPrincipal Jwt jwt){
-//
-//    }
+    @PostMapping
+    public ResponseEntity<CartItemResponse> addToCart(@AuthenticationPrincipal Jwt jwt,
+                                                      @Valid @RequestBody CreateCartItemRequest request){
+        UUID userId = AuthUtils.getUserIdByJwt(jwt);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(cartService.addToCart(userId, request));
+    }
 
     @PostMapping("/change-quantity")
     public ResponseEntity<CartItemInfoResponse> changeQuantityCartItem(

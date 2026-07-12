@@ -84,43 +84,6 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    @Transactional
-    public CartItemResponse addToCart(UUID userId, CreateCartItemRequest request){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User not found"));
-
-        Product product = getProductById(request.productId());
-
-        Optional<CartItem> cartItemOpt =
-                cartItemRepository.findByCartAndProduct(
-                        user.getCart(),
-                        product
-                );
-
-        CartItem cartItem;
-        if(cartItemOpt.isPresent()){
-            cartItem = cartItemOpt.get();
-            cartItem.addQuantity(request.quantity());
-        } else{
-            cartItem = new CartItem(
-                    user.getCart(),
-                    product,
-                    request.quantity()
-            );
-        }
-
-        cartItemRepository.save(cartItem);
-
-        return new CartItemResponse(
-                cartItem.getId(),
-                cartItem.getProduct().getId(),
-                cartItem.getQuantity()
-        );
-    }
-
-    //remove cartItemInCartController
-
     private Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(

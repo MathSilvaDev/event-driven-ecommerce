@@ -66,14 +66,4 @@ public class ProductController {
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @PostMapping("/cart/add")
-    public ResponseEntity<CartItemResponse> addToCart(@AuthenticationPrincipal Jwt jwt,
-                                                      @Valid @RequestBody CreateCartItemRequest request){
-        UUID userId = AuthUtils.getUserIdByJwt(jwt);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(productService.addToCart(userId, request));
-    }
 }
