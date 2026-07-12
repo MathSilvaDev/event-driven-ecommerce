@@ -3,14 +3,8 @@ package com.matheus.ecommerce.application.catalog.product.service;
 import com.matheus.ecommerce.application.catalog.product.dto.request.CreateProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.request.EditProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.response.ProductResponse;
-import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
-import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
-import com.matheus.ecommerce.domain.auth.entity.User;
-import com.matheus.ecommerce.domain.auth.repository.UserRepository;
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
-import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
-import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,16 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
-    private final CartItemRepository cartItemRepository;
 
     public Page<ProductResponse> findAll(int pageNumber, int pageSize){
         Pageable pageable = PageRequest.of(

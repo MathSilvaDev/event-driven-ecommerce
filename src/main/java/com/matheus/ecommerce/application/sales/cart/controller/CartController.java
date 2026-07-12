@@ -45,14 +45,14 @@ public class CartController {
                 .body(cartService.addToCart(userId, request));
     }
 
-    @PostMapping("/change-quantity")
-    public ResponseEntity<CartItemInfoResponse> changeQuantityCartItem(
+    @PatchMapping
+    public ResponseEntity<Void> changeQuantityCartItem(
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody ChangeItemQuantityRequest request){
 
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
-        return ResponseEntity.ok(
-                cartService.changeQuantity(userId, request));
+        cartService.changeQuantity(userId, request);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{cartItemId}")

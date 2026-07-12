@@ -79,7 +79,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartItemInfoResponse changeQuantity(UUID userId, ChangeItemQuantityRequest request){
+    public void changeQuantity(UUID userId, ChangeItemQuantityRequest request){
         User user = getUserById(userId);
 
         CartItem cartItem = cartItemRepository
@@ -91,12 +91,10 @@ public class CartService {
             user.getCart().removeItem(cartItem);
             cartItemRepository.delete(cartItem);
 
-            return null;
+            return;
         }
 
         cartItem.addQuantity(request.quantity());
-
-        return toInfoResponse(cartItem);
     }
 
     @Transactional

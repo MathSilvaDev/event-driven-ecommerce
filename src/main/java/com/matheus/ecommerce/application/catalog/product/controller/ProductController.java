@@ -4,21 +4,13 @@ import com.matheus.ecommerce.application.catalog.product.dto.request.CreateProdu
 import com.matheus.ecommerce.application.catalog.product.dto.request.EditProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.response.ProductResponse;
 import com.matheus.ecommerce.application.catalog.product.service.ProductService;
-import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
-import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
-import com.matheus.ecommerce.common.security.AuthUtils;
-import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/products")
