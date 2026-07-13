@@ -25,14 +25,14 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ResponseEntity<Page<CartItemInfoResponse>> findByUserCart(
+    public ResponseEntity<Page<CartItemInfoResponse>> findAll(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize){
 
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
         return ResponseEntity
-                .ok(cartService.findByUserCart(userId, pageNumber, pageSize));
+                .ok(cartService.findAll(userId, pageNumber, pageSize));
     }
 
     @PostMapping

@@ -32,7 +32,7 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    public Page<CartItemInfoResponse> findByUserCart(UUID userId, int pageNumber, int pageSize){
+    public Page<CartItemInfoResponse> findAll(UUID userId, int pageNumber, int pageSize){
         User user = getUserById(userId);
 
         Pageable pageable = PageRequest.of(
@@ -83,7 +83,7 @@ public class CartService {
         User user = getUserById(userId);
 
         CartItem cartItem = cartItemRepository
-                .findByCartAndProduct_Id(user.getCart(), request.productId())
+                .findByIdAndCart(request.cartItemId(), user.getCart())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Product or CartItem not found"));
 
