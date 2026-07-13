@@ -1,7 +1,5 @@
 package com.matheus.ecommerce.application.sales.order.service;
 
-import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemInfoResponse;
-import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderItemResponse;
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
@@ -12,11 +10,10 @@ import com.matheus.ecommerce.domain.sales.order.entity.Order;
 import com.matheus.ecommerce.domain.sales.order.entity.OrderItem;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
+import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,8 +31,7 @@ public class OrderService {
     public OrderResponse createOrder(UUID userId){
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "user not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         List<CartItem> cartItems = user.getCart().getCartItems()
                 .stream()

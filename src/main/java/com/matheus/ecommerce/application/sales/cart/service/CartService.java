@@ -47,8 +47,7 @@ public class CartService {
     @Transactional
     public CartItemResponse addToCart(UUID userId, CreateCartItemRequest request){
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         Product product = getProductById(request.productId());
 

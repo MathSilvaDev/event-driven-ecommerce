@@ -13,6 +13,7 @@ import com.matheus.ecommerce.domain.auth.repository.RoleRepository;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
 import com.matheus.ecommerce.application.auth.dto.response.TokenDTO;
+import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
 import com.matheus.ecommerce.infrastructure.security.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,8 +48,7 @@ public class AuthService {
         );
 
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         TokenDTO accessTokenDTO =
                 jwtService.generateAccessToken(user);
@@ -104,8 +104,7 @@ public class AuthService {
         UUID userId = jwtService.extractUserId(request.refreshToken());
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         TokenDTO newTokenAccess = jwtService.refreshToken(request.refreshToken(), user);
 
