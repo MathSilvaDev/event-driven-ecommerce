@@ -41,4 +41,8 @@ public class CartItem {
         this.quantity += quantity;
     }
 
+    public void toggleSelected(){
+        isSelected = !isSelected;
+    }
+
 }

@@ -10,6 +10,7 @@ import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
 import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
+import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -98,6 +99,17 @@ public class CartService {
     }
 
     @Transactional
+    public void toggleSelected(UUID userId, Long cartItemId){
+        User user = getUserById(userId);
+
+        CartItem cartItem = cartItemRepository.findByIdAndCart(cartItemId, user.getCart())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "cartItem not found"));
+
+        cartItem.toggleSelected();
+    }
+
+    @Transactional
     public void deleteCartItem(UUID userId, Long cartItemId){
         User user = getUserById(userId);
 
@@ -111,8 +123,7 @@ public class CartService {
 
     private User getUserById(UUID userId){
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private CartItemInfoResponse toInfoResponse(CartItem cartItem){

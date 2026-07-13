@@ -51,7 +51,17 @@ public class CartController {
             @RequestBody ChangeItemQuantityRequest request){
 
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
+
         cartService.changeQuantity(userId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{cartItemId}")
+    public ResponseEntity<Void> toggleSelected(@AuthenticationPrincipal Jwt jwt,
+                                               @PathVariable Long cartItemId){
+        UUID userId = AuthUtils.getUserIdByJwt(jwt);
+
+        cartService.toggleSelected(userId, cartItemId);
         return ResponseEntity.noContent().build();
     }
 
