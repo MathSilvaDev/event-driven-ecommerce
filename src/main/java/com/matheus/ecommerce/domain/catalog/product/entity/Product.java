@@ -55,8 +55,15 @@ public class Product {
         this.quantity = quantity == null ? this.quantity : quantity;
     }
 
-    public boolean isAvailable(){
-        return quantity > 0;
+    public void removeQuantity(int quantity){
+        this.quantity -= quantity;
     }
 
+    public boolean isAvailable(int newQuantity){
+        return quantity > 0 && quantity >= newQuantity;
+    }
+
+    public boolean isUnavailable(int newQuantity){
+        return quantity <= 0 || quantity < newQuantity;
+    }
 }

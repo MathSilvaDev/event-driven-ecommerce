@@ -12,8 +12,10 @@ import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
 import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +39,15 @@ public class OrderService {
                 .stream()
                 .filter(CartItem::isSelected)
                 .toList();
+
+        cartItems.forEach((i) -> {
+            if(i.getProduct().isUnavailable(i.getQuantity())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "One or more products have an unavailable quantity");
+            }else{
+                i.getProduct().removeQuantity(i.getQuantity());
+            }
+        });
 
         List<OrderItem> orderItems = cartItems
                 .stream()
