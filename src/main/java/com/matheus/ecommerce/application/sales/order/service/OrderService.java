@@ -4,6 +4,7 @@ import com.matheus.ecommerce.application.sales.order.dto.response.OrderItemRespo
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
+import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
 import com.matheus.ecommerce.domain.sales.order.entity.Order;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,7 +53,10 @@ public class OrderService {
 
         List<OrderItem> orderItems = cartItems
                 .stream()
-                .map(i -> new OrderItem(i.getProduct(), i.getQuantity()))
+                .map(i -> new OrderItem(
+                        i.getProduct(),
+                        i.getProduct().getPrice(),
+                        i.getQuantity()))
                 .toList();
 
         orderItemRepository.saveAll(orderItems);
@@ -65,13 +70,26 @@ public class OrderService {
     }
 
     private OrderResponse toResponse(Order order){
+        List<OrderItem> orderItems = order.getOrderItems();
+
+        BigDecimal price = orderItems.stream()
+                .map(OrderItem::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        int quantity = orderItems.stream()
+                .mapToInt(OrderItem::getQuantity)
+                .sum();
+
         return new OrderResponse(
                 order.getId(),
                 order.getStatus(),
-                order.getOrderItems()
+                price.multiply(BigDecimal.valueOf(quantity)),
+
+                orderItems
                         .stream()
                         .map(this::toItemResponse)
                         .toList(),
+
                 order.getCreatedAt()
         );
     }
@@ -80,7 +98,10 @@ public class OrderService {
         return new OrderItemResponse(
                 orderItem.getId(),
                 orderItem.getProduct().getName(),
-                orderItem.getQuantity()
+                orderItem.getPrice(),
+                orderItem.getQuantity(),
+                orderItem.getPrice().multiply(
+                        BigDecimal.valueOf(orderItem.getQuantity()))
         );
     }
 }
