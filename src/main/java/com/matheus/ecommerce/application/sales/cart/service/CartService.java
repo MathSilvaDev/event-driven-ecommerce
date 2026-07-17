@@ -2,7 +2,6 @@ package com.matheus.ecommerce.application.sales.cart.service;
 
 import com.matheus.ecommerce.application.sales.cart.dto.request.ChangeItemQuantityRequest;
 import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
-import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemInfoResponse;
 import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
@@ -32,7 +31,7 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    public Page<CartItemInfoResponse> findAll(UUID userId, int pageNumber, int pageSize){
+    public Page<CartItemResponse> findAll(UUID userId, int pageNumber, int pageSize){
         User user = getUserById(userId);
 
         Pageable pageable = PageRequest.of(
@@ -41,7 +40,7 @@ public class CartService {
         );
 
         return cartItemRepository.findByCart(user.getCart(), pageable)
-                .map(this::toInfoResponse);
+                .map(this::toResponse);
     }
 
     @Transactional
@@ -76,11 +75,7 @@ public class CartService {
 
         cartItemRepository.save(cartItem);
 
-        return new CartItemResponse(
-                cartItem.getId(),
-                cartItem.getProduct().getId(),
-                cartItem.getQuantity()
-        );
+        return toResponse(cartItem);
     }
 
     @Transactional
@@ -137,12 +132,16 @@ public class CartService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
-    private CartItemInfoResponse toInfoResponse(CartItem cartItem){
-        return new CartItemInfoResponse(
-                cartItem.getId(),
-                cartItem.getProduct().getName(),
-                cartItem.getProduct().getPrice(),
-                cartItem.getQuantity()
+    private CartItemResponse toResponse(CartItem cartItem){
+        Product product = cartItem.getProduct();
+
+        return new CartItemResponse(
+                cartItem.getId(), 
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                cartItem.getQuantity(),
+                cartItem.isSelected()
         );
     }
 

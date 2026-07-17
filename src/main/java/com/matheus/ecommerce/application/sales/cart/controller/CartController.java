@@ -2,7 +2,6 @@ package com.matheus.ecommerce.application.sales.cart.controller;
 
 import com.matheus.ecommerce.application.sales.cart.dto.request.ChangeItemQuantityRequest;
 import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
-import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemInfoResponse;
 import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
 import com.matheus.ecommerce.application.sales.cart.service.CartService;
 import com.matheus.ecommerce.common.security.AuthUtils;
@@ -25,7 +24,7 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ResponseEntity<Page<CartItemInfoResponse>> findAll(
+    public ResponseEntity<Page<CartItemResponse>> findAll(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize){
