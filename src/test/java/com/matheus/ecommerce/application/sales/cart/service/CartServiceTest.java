@@ -18,15 +18,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
 class CartServiceTest {
@@ -46,6 +51,34 @@ class CartServiceTest {
     @Nested
     class FindAll{
 
+        @Test
+        void shouldFindAllSuccessfully(){
+            User user = newUser();
+            Product product = newProduct();
+
+            List<CartItem> cartItems = List.of(
+                    new CartItem(
+                            user.getCart(),
+                            product,
+                            1
+                    ));
+
+            Page<CartItem> pageable = new PageImpl<>(cartItems);
+
+            Mockito.when(userRepository.findById(user.getId()))
+                            .thenReturn(Optional.of(user));
+
+            Mockito.when(cartItemRepository.findByCart(eq(user.getCart()), any(Pageable.class)))
+                    .thenReturn(pageable);
+
+            Page<CartItemResponse> response =
+                    cartService.findAll(user.getId(), 0, 10);
+
+            assertEquals(cartItems.size(), response.getContent().size());
+
+            Mockito.verify(cartItemRepository).findByCart(
+                    eq(user.getCart()), any(Pageable.class));
+        }
     }
 
     @Nested
