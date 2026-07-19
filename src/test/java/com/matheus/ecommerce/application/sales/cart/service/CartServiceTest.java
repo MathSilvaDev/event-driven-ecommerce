@@ -301,6 +301,32 @@ class CartServiceTest {
         }
     }
 
+    @Nested
+    class DeleteCartItem{
+
+        @Test
+        void shouldDeleteCartItemSuccessfully(){
+            User user = newUser();
+            Product product = newProduct();
+            CartItem cartItem = new CartItem(
+                    user.getCart(), product, 3);
+
+            Mockito.when(userRepository.findById(user.getId()))
+                    .thenReturn(Optional.of(user));
+
+            Mockito.when(cartItemRepository
+                            .findByIdAndCart(cartItem.getId(), user.getCart()))
+                    .thenReturn(Optional.of(cartItem));
+
+            cartService.deleteCartItem(user.getId(), cartItem.getId());
+
+            Mockito.verify(userRepository).findById(user.getId());
+            Mockito.verify(cartItemRepository)
+                    .findByIdAndCart(cartItem.getId(), user.getCart());
+            Mockito.verify(cartItemRepository).delete(cartItem);
+        }
+    }
+
     private User newUser(){
         User user = new User(
                 "user_name",
