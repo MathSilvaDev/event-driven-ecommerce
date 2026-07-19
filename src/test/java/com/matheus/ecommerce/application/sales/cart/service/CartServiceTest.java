@@ -31,7 +31,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class CartServiceTest {
@@ -269,6 +268,36 @@ class CartServiceTest {
             Mockito.verify(userRepository).findById(user.getId());
             Mockito.verify(cartItemRepository)
                     .findByIdAndCart(request.cartItemId(), user.getCart());
+        }
+    }
+
+    @Nested
+    class ToggleSelected{
+
+        @Test
+        void shouldToggleSuccessfully(){
+            User user = newUser();
+            Product product = newProduct();
+            CartItem cartItem = new CartItem(
+                    user.getCart(), product, 3);
+
+            Mockito.when(userRepository.findById(user.getId()))
+                    .thenReturn(Optional.of(user));
+
+            Mockito.when(cartItemRepository
+                    .findByIdAndCart(cartItem.getId(), user.getCart()))
+                    .thenReturn(Optional.of(cartItem));
+
+            assertTrue(cartItem.isSelected());
+
+            cartService.toggleSelected(user.getId(), cartItem.getId());
+
+            assertFalse(cartItem.isSelected());
+
+            Mockito.verify(userRepository).findById(user.getId());
+            Mockito.verify(cartItemRepository)
+                    .findByIdAndCart(cartItem.getId(), user.getCart());
+
         }
     }
 
