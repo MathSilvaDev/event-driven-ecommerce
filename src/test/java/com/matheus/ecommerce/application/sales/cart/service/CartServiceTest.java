@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class CartServiceTest {
@@ -219,6 +220,31 @@ class CartServiceTest {
         }
 
         @Test
+        void shouldDeleteWhenQuantityBecomesNegative(){
+            User user = newUser();
+            Product product = newProduct();
+            CartItem cartItem = new CartItem(
+                    user.getCart(), product, 3);
+
+            ChangeItemQuantityRequest request =
+                    new ChangeItemQuantityRequest(cartItem.getId(), -3);
+
+            Mockito.when(userRepository.findById(user.getId()))
+                    .thenReturn(Optional.of(user));
+
+            Mockito.when(cartItemRepository
+                            .findByIdAndCart(request.cartItemId(), user.getCart()))
+                    .thenReturn(Optional.of(cartItem));
+
+            cartService.changeQuantity(user.getId(), request);
+
+            Mockito.verify(userRepository).findById(user.getId());
+            Mockito.verify(cartItemRepository)
+                    .findByIdAndCart(request.cartItemId(), user.getCart());
+            Mockito.verify(cartItemRepository).delete(cartItem);
+        }
+
+        @Test
         void shouldThrowIfQuantityIsUnavailable(){
             User user = newUser();
             Product product = newProduct();
@@ -244,10 +270,6 @@ class CartServiceTest {
             Mockito.verify(cartItemRepository)
                     .findByIdAndCart(request.cartItemId(), user.getCart());
         }
-
-        //throw if available quantity is less than requestQuantity
-        //remove if is available and the sum is 0 or less
-        //other throws
     }
 
     private User newUser(){
