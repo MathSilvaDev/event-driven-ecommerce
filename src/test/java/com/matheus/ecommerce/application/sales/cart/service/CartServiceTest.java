@@ -218,6 +218,33 @@ class CartServiceTest {
                     .findByIdAndCart(request.cartItemId(), user.getCart());
         }
 
+        @Test
+        void shouldThrowIfQuantityIsUnavailable(){
+            User user = newUser();
+            Product product = newProduct();
+            CartItem cartItem = new CartItem(
+                    user.getCart(), product, 3);
+
+            ChangeItemQuantityRequest request =
+                    new ChangeItemQuantityRequest(cartItem.getId(), 3);
+
+            Mockito.when(userRepository.findById(user.getId()))
+                    .thenReturn(Optional.of(user));
+
+            Mockito.when(cartItemRepository
+                            .findByIdAndCart(request.cartItemId(), user.getCart()))
+                    .thenReturn(Optional.of(cartItem));
+
+            assertThrows(ResponseStatusException.class,
+                    () -> cartService.changeQuantity(user.getId(), request));
+
+            assertEquals(3, cartItem.getQuantity());
+
+            Mockito.verify(userRepository).findById(user.getId());
+            Mockito.verify(cartItemRepository)
+                    .findByIdAndCart(request.cartItemId(), user.getCart());
+        }
+
         //throw if available quantity is less than requestQuantity
         //remove if is available and the sum is 0 or less
         //other throws
