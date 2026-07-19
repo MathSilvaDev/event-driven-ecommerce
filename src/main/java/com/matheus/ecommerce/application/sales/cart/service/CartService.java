@@ -85,7 +85,7 @@ public class CartService {
         CartItem cartItem = cartItemRepository
                 .findByIdAndCart(request.cartItemId(), user.getCart())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Product or CartItem not found"));
+                        "cartItem not found"));
 
         int newQuantity = cartItem.getQuantity() + request.quantity();
 

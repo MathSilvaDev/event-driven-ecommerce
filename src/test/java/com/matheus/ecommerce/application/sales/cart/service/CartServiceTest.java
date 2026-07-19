@@ -1,5 +1,6 @@
 package com.matheus.ecommerce.application.sales.cart.service;
 
+import com.matheus.ecommerce.application.sales.cart.dto.request.ChangeItemQuantityRequest;
 import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
 import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
 import com.matheus.ecommerce.domain.auth.entity.Role;
@@ -24,14 +25,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class CartServiceTest {
@@ -188,6 +187,40 @@ class CartServiceTest {
             Mockito.verify(cartItemRepository).save(cartItem);
         }
 
+    }
+
+    @Nested
+    class ChangeQuantity{
+
+        @Test
+        void shouldChangeQuantitySuccessfully(){
+            User user = newUser();
+            Product product = newProduct();
+            CartItem cartItem = new CartItem(
+                    user.getCart(), product, 3);
+
+            ChangeItemQuantityRequest request =
+                    new ChangeItemQuantityRequest(cartItem.getId(), 2);
+
+            Mockito.when(userRepository.findById(user.getId()))
+                    .thenReturn(Optional.of(user));
+
+            Mockito.when(cartItemRepository
+                    .findByIdAndCart(request.cartItemId(), user.getCart()))
+                    .thenReturn(Optional.of(cartItem));
+
+            cartService.changeQuantity(user.getId(), request);
+
+            assertEquals(5, cartItem.getQuantity());
+
+            Mockito.verify(userRepository).findById(user.getId());
+            Mockito.verify(cartItemRepository)
+                    .findByIdAndCart(request.cartItemId(), user.getCart());
+        }
+
+        //throw if available quantity is less than requestQuantity
+        //remove if is available and the sum is 0 or less
+        //other throws
     }
 
     private User newUser(){
