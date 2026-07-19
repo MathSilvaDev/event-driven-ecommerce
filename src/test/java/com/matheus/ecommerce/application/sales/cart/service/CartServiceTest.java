@@ -48,7 +48,7 @@ class CartServiceTest {
     private CartService cartService;
 
     @Nested
-    class FindAll{
+    class FindAllCartItems {
 
         @Test
         void shouldFindAllSuccessfully(){
@@ -71,7 +71,7 @@ class CartServiceTest {
                     .thenReturn(pageable);
 
             Page<CartItemResponse> response =
-                    cartService.findAll(user.getId(), 0, 10);
+                    cartService.findAllCartItems(user.getId(), 0, 10);
 
             assertEquals(cartItems.size(), response.getContent().size());
 
@@ -81,7 +81,7 @@ class CartServiceTest {
     }
 
     @Nested
-    class AddToCart{
+    class AddCartItemToCart {
 
         @Test
         void shouldThrowIfUserDoesNotExist(){
@@ -94,7 +94,7 @@ class CartServiceTest {
                     .thenReturn(Optional.empty());
 
             assertThrows(UserNotFoundException.class,
-                    () -> cartService.addToCart(userId, request));
+                    () -> cartService.addCartItemToCart(userId, request));
 
             Mockito.verify(userRepository).findById(userId);
         }
@@ -115,7 +115,7 @@ class CartServiceTest {
                             .thenReturn(Optional.empty());
 
             assertThrows(ResponseStatusException.class,
-                    () -> cartService.addToCart(userId, request));
+                    () -> cartService.addCartItemToCart(userId, request));
 
             Mockito.verify(userRepository).findById(userId);
             Mockito.verify(productRepository).findById(productId);
@@ -141,7 +141,7 @@ class CartServiceTest {
             Mockito.when(cartItemRepository.findByCartAndProduct(user.getCart(), product))
                     .thenReturn(Optional.empty());
 
-            CartItemResponse response = cartService.addToCart(userId, request);
+            CartItemResponse response = cartService.addCartItemToCart(userId, request);
 
             assertEquals(request.productId(), response.productId());
             assertEquals(request.quantity(), response.quantity());
@@ -176,7 +176,7 @@ class CartServiceTest {
             Mockito.when(cartItemRepository.findByCartAndProduct(user.getCart(), product))
                     .thenReturn(Optional.of(cartItem));
 
-            CartItemResponse response = cartService.addToCart(userId, request);
+            CartItemResponse response = cartService.addCartItemToCart(userId, request);
 
             assertEquals(request.productId(), response.productId());
             assertEquals((oldItemCartQuantity + request.quantity()), response.quantity());
@@ -190,7 +190,7 @@ class CartServiceTest {
     }
 
     @Nested
-    class ChangeQuantity{
+    class ChangeCartItemQuantity {
 
         @Test
         void shouldChangeQuantitySuccessfully(){
@@ -209,7 +209,7 @@ class CartServiceTest {
                     .findByIdAndCart(request.cartItemId(), user.getCart()))
                     .thenReturn(Optional.of(cartItem));
 
-            cartService.changeQuantity(user.getId(), request);
+            cartService.changeCartItemQuantity(user.getId(), request);
 
             assertEquals(5, cartItem.getQuantity());
 
@@ -235,7 +235,7 @@ class CartServiceTest {
                             .findByIdAndCart(request.cartItemId(), user.getCart()))
                     .thenReturn(Optional.of(cartItem));
 
-            cartService.changeQuantity(user.getId(), request);
+            cartService.changeCartItemQuantity(user.getId(), request);
 
             Mockito.verify(userRepository).findById(user.getId());
             Mockito.verify(cartItemRepository)
@@ -261,7 +261,7 @@ class CartServiceTest {
                     .thenReturn(Optional.of(cartItem));
 
             assertThrows(ResponseStatusException.class,
-                    () -> cartService.changeQuantity(user.getId(), request));
+                    () -> cartService.changeCartItemQuantity(user.getId(), request));
 
             assertEquals(3, cartItem.getQuantity());
 
@@ -272,7 +272,7 @@ class CartServiceTest {
     }
 
     @Nested
-    class ToggleSelected{
+    class ToggleCartItemSelected {
 
         @Test
         void shouldToggleSuccessfully(){
@@ -290,7 +290,7 @@ class CartServiceTest {
 
             assertTrue(cartItem.isSelected());
 
-            cartService.toggleSelected(user.getId(), cartItem.getId());
+            cartService.toggleCartItemSelected(user.getId(), cartItem.getId());
 
             assertFalse(cartItem.isSelected());
 

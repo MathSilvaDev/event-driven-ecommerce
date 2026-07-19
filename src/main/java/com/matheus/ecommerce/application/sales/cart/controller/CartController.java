@@ -24,43 +24,43 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ResponseEntity<Page<CartItemResponse>> findAll(
+    public ResponseEntity<Page<CartItemResponse>> findAllCartItems(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize){
 
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
         return ResponseEntity
-                .ok(cartService.findAll(userId, pageNumber, pageSize));
+                .ok(cartService.findAllCartItems(userId, pageNumber, pageSize));
     }
 
     @PostMapping
-    public ResponseEntity<CartItemResponse> addToCart(@AuthenticationPrincipal Jwt jwt,
-                                                      @Valid @RequestBody CreateCartItemRequest request){
+    public ResponseEntity<CartItemResponse> addCartItemToCart(@AuthenticationPrincipal Jwt jwt,
+                                                              @Valid @RequestBody CreateCartItemRequest request){
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(cartService.addToCart(userId, request));
+                .body(cartService.addCartItemToCart(userId, request));
     }
 
     @PatchMapping
-    public ResponseEntity<Void> changeQuantityCartItem(
+    public ResponseEntity<Void> changeCartItemQuantity(
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody ChangeItemQuantityRequest request){
 
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
 
-        cartService.changeQuantity(userId, request);
+        cartService.changeCartItemQuantity(userId, request);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{cartItemId}")
-    public ResponseEntity<Void> toggleSelected(@AuthenticationPrincipal Jwt jwt,
-                                               @PathVariable Long cartItemId){
+    public ResponseEntity<Void> toggleCartItemSelected(@AuthenticationPrincipal Jwt jwt,
+                                                       @PathVariable Long cartItemId){
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
 
-        cartService.toggleSelected(userId, cartItemId);
+        cartService.toggleCartItemSelected(userId, cartItemId);
         return ResponseEntity.noContent().build();
     }
 

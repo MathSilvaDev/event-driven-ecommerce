@@ -31,7 +31,7 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    public Page<CartItemResponse> findAll(UUID userId, int pageNumber, int pageSize){
+    public Page<CartItemResponse> findAllCartItems(UUID userId, int pageNumber, int pageSize){
         User user = getUserById(userId);
 
         Pageable pageable = PageRequest.of(
@@ -44,7 +44,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartItemResponse addToCart(UUID userId, CreateCartItemRequest request){
+    public CartItemResponse addCartItemToCart(UUID userId, CreateCartItemRequest request){
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -79,7 +79,7 @@ public class CartService {
     }
 
     @Transactional
-    public void changeQuantity(UUID userId, ChangeItemQuantityRequest request){
+    public void changeCartItemQuantity(UUID userId, ChangeItemQuantityRequest request){
         User user = getUserById(userId);
 
         CartItem cartItem = cartItemRepository
@@ -105,7 +105,7 @@ public class CartService {
     }
 
     @Transactional
-    public void toggleSelected(UUID userId, Long cartItemId){
+    public void toggleCartItemSelected(UUID userId, Long cartItemId){
         User user = getUserById(userId);
 
         CartItem cartItem = cartItemRepository.findByIdAndCart(cartItemId, user.getCart())
