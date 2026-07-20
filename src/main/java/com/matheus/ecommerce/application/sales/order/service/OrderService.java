@@ -13,6 +13,10 @@ import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
 import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +38,7 @@ public class OrderService {
     @Transactional
     public OrderResponse createOrder(UUID userId){
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+        User user = findUserById(userId);
 
         List<CartItem> cartItems = user.getCart().getCartItems()
                 .stream()
@@ -67,6 +70,20 @@ public class OrderService {
         cartItemRepository.deleteAll(cartItems);
 
         return toResponse(order);
+    }
+
+    public Page<OrderResponse> findAllMyOrders(UUID userId, int pageNumber, int pageSize){
+        User user = findUserById(userId);
+
+        Pageable pageable = PageRequest.of(
+                pageNumber,
+                pageSize,
+                Sort.by("createdAt")
+        );
+
+        return orderRepository.findByUser(user, pageable)
+                .map(this::toResponse);
+
     }
 
     private OrderResponse toResponse(Order order){
@@ -103,5 +120,10 @@ public class OrderService {
                 orderItem.getPrice().multiply(
                         BigDecimal.valueOf(orderItem.getQuantity()))
         );
+    }
+
+    private User findUserById(UUID userId){
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
     }
 }
