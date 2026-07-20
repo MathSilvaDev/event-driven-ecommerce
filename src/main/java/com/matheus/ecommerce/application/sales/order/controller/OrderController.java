@@ -3,10 +3,12 @@ package com.matheus.ecommerce.application.sales.order.controller;
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderResponse;
 import com.matheus.ecommerce.application.sales.order.service.OrderService;
 import com.matheus.ecommerce.common.security.AuthUtils;
+import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +35,7 @@ public class OrderController {
     @GetMapping("/me")
     public ResponseEntity<Page<OrderResponse>> findAllMyOrders(@AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "0") int pageSize){
+            @RequestParam(defaultValue = "10") int pageSize){
 
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
 
@@ -41,4 +43,14 @@ public class OrderController {
                 .ok(orderService.findAllMyOrders(userId, pageNumber, pageSize));
     }
 
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<OrderResponse>> findAllOrders(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) OrderStatus orderStatus){
+
+        return ResponseEntity
+                .ok(orderService.findAllOrders(pageNumber, pageSize, orderStatus));
+    }
 }

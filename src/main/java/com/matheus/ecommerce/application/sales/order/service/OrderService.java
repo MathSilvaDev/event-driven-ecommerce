@@ -4,11 +4,11 @@ import com.matheus.ecommerce.application.sales.order.dto.response.OrderItemRespo
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
-import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
 import com.matheus.ecommerce.domain.sales.order.entity.Order;
 import com.matheus.ecommerce.domain.sales.order.entity.OrderItem;
+import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
 import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
@@ -78,10 +78,29 @@ public class OrderService {
         Pageable pageable = PageRequest.of(
                 pageNumber,
                 pageSize,
-                Sort.by("createdAt")
+                Sort.by("createdAt").descending()
         );
 
         return orderRepository.findByUser(user, pageable)
+                .map(this::toResponse);
+
+    }
+
+    public Page<OrderResponse> findAllOrders(int pageNumber, int pageSize,
+                                             OrderStatus orderStatus){
+
+        Pageable pageable = PageRequest.of(
+                pageNumber,
+                pageSize,
+                Sort.by("createdAt")
+        );
+
+        if(orderStatus == null){
+            return orderRepository.findAll(pageable)
+                    .map(this::toResponse);
+        }
+
+        return orderRepository.findByStatus(orderStatus, pageable)
                 .map(this::toResponse);
 
     }
