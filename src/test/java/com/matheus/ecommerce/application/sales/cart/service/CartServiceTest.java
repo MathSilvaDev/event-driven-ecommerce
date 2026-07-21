@@ -37,10 +37,8 @@ class CartServiceTest {
 
     @Mock
     private CartItemRepository cartItemRepository;
-
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private ProductRepository productRepository;
 
