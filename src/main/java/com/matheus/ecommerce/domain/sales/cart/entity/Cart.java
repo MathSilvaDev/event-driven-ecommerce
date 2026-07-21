@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -35,8 +36,19 @@ public class Cart {
         cartItem.setCart(this);
     }
 
+    public void addItems(Collection<? extends CartItem> cartItems){
+        this.cartItems.addAll(cartItems);
+    }
+
     public void removeItem(CartItem cartItem){
         this.cartItems.remove(cartItem);
         cartItem.setCart(null);
+    }
+
+    public void removeItems(Collection<? extends CartItem> cartItems){
+        for(CartItem cartItem : cartItems){
+            this.cartItems.remove(cartItem);
+            cartItem.setCart(null);
+        }
     }
 }

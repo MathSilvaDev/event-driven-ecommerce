@@ -67,6 +67,7 @@ public class OrderService {
         Order order = new Order(user, orderItems);
         orderRepository.save(order);
 
+        user.getCart().removeItems(cartItems);
         cartItemRepository.deleteAll(cartItems);
 
         return toResponse(order);

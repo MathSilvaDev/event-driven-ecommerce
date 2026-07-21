@@ -3,6 +3,7 @@ package com.matheus.ecommerce.application.catalog.product.service;
 import com.matheus.ecommerce.application.catalog.product.dto.request.CreateProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.request.EditProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.response.ProductResponse;
+import com.matheus.ecommerce.application.common.UtilsTest;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
@@ -41,7 +42,7 @@ class ProductServiceTest {
         @Test
         void shouldFindAllSuccessfully(){
 
-            Product product = newProduct();
+            Product product = UtilsTest.newProduct();
             List<Product> productList = List.of(product);
             Page<Product> page = new PageImpl<>(productList);
 
@@ -62,7 +63,7 @@ class ProductServiceTest {
 
         @Test
         void shouldFindByIdSuccessfully(){
-            Product product = newProduct();
+            Product product = UtilsTest.newProduct();
 
             Mockito.when(productRepository.findById(product.getId()))
                     .thenReturn(Optional.of(product));
@@ -93,7 +94,7 @@ class ProductServiceTest {
 
         @Test
         void shouldCreateSuccessfully(){
-            Product product = newProduct();
+            Product product = UtilsTest.newProduct();
             CreateProductRequest request = new CreateProductRequest(
                     product.getName(),
                     product.getDescription(),
@@ -118,7 +119,7 @@ class ProductServiceTest {
 
         @Test
         void shouldEditSuccessfully(){
-            Product product = newProduct();
+            Product product = UtilsTest.newProduct();
             EditProductRequest request = new EditProductRequest(
                     "new_name",
                     null,
@@ -142,7 +143,7 @@ class ProductServiceTest {
 
         @Test
         void shouldThrowProductWasNotFound(){
-            Product product = newProduct();
+            Product product = UtilsTest.newProduct();
             EditProductRequest request = new EditProductRequest(
                     "new_name",
                     null,
@@ -171,7 +172,7 @@ class ProductServiceTest {
 
         @Test
         void shouldDeleteSuccessfully(){
-            Product product = newProduct();
+            Product product = UtilsTest.newProduct();
 
             Mockito.when(productRepository.findById(product.getId()))
                     .thenReturn(Optional.of(product));
@@ -181,15 +182,6 @@ class ProductServiceTest {
             Mockito.verify(productRepository).findById(product.getId());
             Mockito.verify(productRepository).delete(product);
         }
-    }
-
-    private Product newProduct(){
-        return new Product(
-                "product_name",
-                "product_description",
-                BigDecimal.TEN,
-                5
-        );
     }
 
 }

@@ -1,4 +1,4 @@
-package com.matheus.ecommerce.application.auth.dto.response;
+package com.matheus.ecommerce.application.common.dto.response;
 
 import java.time.Instant;
 

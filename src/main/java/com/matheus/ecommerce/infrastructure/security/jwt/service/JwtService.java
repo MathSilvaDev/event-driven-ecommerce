@@ -2,7 +2,7 @@ package com.matheus.ecommerce.infrastructure.security.jwt.service;
 
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.infrastructure.exception.jwt.InvalidRefreshTokenException;
-import com.matheus.ecommerce.application.auth.dto.response.TokenDTO;
+import com.matheus.ecommerce.application.common.dto.response.TokenDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.*;

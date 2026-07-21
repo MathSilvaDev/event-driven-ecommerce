@@ -1,11 +1,10 @@
 package com.matheus.ecommerce.application.sales.cart.service;
 
+import com.matheus.ecommerce.application.common.UtilsTest;
 import com.matheus.ecommerce.application.sales.cart.dto.request.ChangeItemQuantityRequest;
 import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
 import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
-import com.matheus.ecommerce.domain.auth.entity.Role;
 import com.matheus.ecommerce.domain.auth.entity.User;
-import com.matheus.ecommerce.domain.auth.enums.RoleName;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
@@ -50,8 +49,8 @@ class CartServiceTest {
 
         @Test
         void shouldFindAllSuccessfully(){
-            User user = newUser();
-            Product product = newProduct();
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct();
 
             List<CartItem> cartItems = List.of(
                     new CartItem(
@@ -99,7 +98,7 @@ class CartServiceTest {
 
         @Test
         void shouldThrowIfProductDoesNotExist(){
-            User user = newUser();
+            User user = UtilsTest.newUser();
             UUID userId = user.getId();
             Long productId = 1L;
 
@@ -121,8 +120,8 @@ class CartServiceTest {
 
         @Test
         void shouldCreateIfCartItemDoesNotExist(){
-            User user = newUser();
-            Product product = newProduct();
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct();
 
             UUID userId = user.getId();
             Long productId = product.getId();
@@ -152,8 +151,8 @@ class CartServiceTest {
 
         @Test
         void shouldUpdateIfItemCartExists(){
-            User user = newUser();
-            Product product = newProduct();
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct();
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 2);
 
@@ -192,8 +191,8 @@ class CartServiceTest {
 
         @Test
         void shouldChangeQuantitySuccessfully(){
-            User user = newUser();
-            Product product = newProduct();
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct();
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
@@ -218,8 +217,8 @@ class CartServiceTest {
 
         @Test
         void shouldDeleteWhenQuantityBecomesNegative(){
-            User user = newUser();
-            Product product = newProduct();
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct();
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
@@ -243,8 +242,8 @@ class CartServiceTest {
 
         @Test
         void shouldThrowIfQuantityIsUnavailable(){
-            User user = newUser();
-            Product product = newProduct();
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct();
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
@@ -274,8 +273,8 @@ class CartServiceTest {
 
         @Test
         void shouldToggleSuccessfully(){
-            User user = newUser();
-            Product product = newProduct();
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct();
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
@@ -304,8 +303,8 @@ class CartServiceTest {
 
         @Test
         void shouldDeleteCartItemSuccessfully(){
-            User user = newUser();
-            Product product = newProduct();
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct();
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
@@ -323,27 +322,6 @@ class CartServiceTest {
                     .findByIdAndCart(cartItem.getId(), user.getCart());
             Mockito.verify(cartItemRepository).delete(cartItem);
         }
-    }
-
-    private User newUser(){
-        User user = new User(
-                "user_name",
-                "email@email.com",
-                "raw_password"
-        );
-        Role role = new Role(RoleName.BASIC);
-        user.addRoles(List.of(role));
-
-        return user;
-    }
-
-    private Product newProduct(){
-        return new Product(
-                "product_name",
-                "product_description",
-                BigDecimal.TEN,
-                5
-        );
     }
 
 }

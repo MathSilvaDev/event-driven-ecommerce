@@ -1,10 +1,10 @@
-package com.matheus.ecommerce.application.auth.service;
+package com.matheus.ecommerce.application.common.service;
 
-import com.matheus.ecommerce.application.auth.dto.request.LoginRequest;
-import com.matheus.ecommerce.application.auth.dto.request.RefreshRequest;
-import com.matheus.ecommerce.application.auth.dto.request.RegisterRequest;
-import com.matheus.ecommerce.application.auth.dto.response.LoginResponse;
-import com.matheus.ecommerce.application.auth.dto.response.RefreshResponse;
+import com.matheus.ecommerce.application.common.dto.request.LoginRequest;
+import com.matheus.ecommerce.application.common.dto.request.RefreshRequest;
+import com.matheus.ecommerce.application.common.dto.request.RegisterRequest;
+import com.matheus.ecommerce.application.common.dto.response.LoginResponse;
+import com.matheus.ecommerce.application.common.dto.response.RefreshResponse;
 import com.matheus.ecommerce.domain.auth.entity.RefreshToken;
 import com.matheus.ecommerce.domain.auth.repository.RefreshTokenRepository;
 import com.matheus.ecommerce.domain.auth.entity.Role;
@@ -12,7 +12,7 @@ import com.matheus.ecommerce.domain.auth.enums.RoleName;
 import com.matheus.ecommerce.domain.auth.repository.RoleRepository;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
-import com.matheus.ecommerce.application.auth.dto.response.TokenDTO;
+import com.matheus.ecommerce.application.common.dto.response.TokenDTO;
 import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
 import com.matheus.ecommerce.infrastructure.security.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
