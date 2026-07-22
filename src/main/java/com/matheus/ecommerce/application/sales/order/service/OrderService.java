@@ -65,6 +65,8 @@ public class OrderService {
         orderItemRepository.saveAll(orderItems);
 
         Order order = new Order(user, orderItems);
+        user.getOrders().add(order);
+
         orderRepository.save(order);
 
         user.getCart().removeItems(cartItems);

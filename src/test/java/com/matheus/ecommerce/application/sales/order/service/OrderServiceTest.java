@@ -43,7 +43,7 @@ class OrderServiceTest {
         @Test
         void shouldCreateOrder(){
             User user = UtilsTest.newUser();
-            Set<CartItem> cartItems = genCartItems(user, 2, 1);
+            Set<CartItem> cartItems = genCartItems(user, 3, 1);
             user.getCart().addItems(cartItems);
             user.getCart().getCartItems().stream()
                     .toList().getFirst().toggleSelected();
@@ -51,11 +51,14 @@ class OrderServiceTest {
             Mockito.when(userRepository.findById(user.getId()))
                     .thenReturn(Optional.of(user));
 
-            assertEquals(2, user.getCart().getCartItems().size());
+            assertEquals(3, user.getCart().getCartItems().size());
+            assertEquals(0, user.getOrders().size());
 
             OrderResponse response = orderService.createOrder(user.getId());
 
             assertEquals(1, user.getCart().getCartItems().size());
+            assertEquals(1, user.getOrders().size());
+            assertEquals(2, user.getOrders().getFirst().getOrderItems().size());
 
             List<CartItem> cartItemsSelected = cartItems.stream()
                     .filter(CartItem::isSelected)
@@ -70,7 +73,7 @@ class OrderServiceTest {
         @Test
         void shouldThrowIfQuantityUnavailable(){
             User user = UtilsTest.newUser();
-            Set<CartItem> cartItems = genCartItems(user, 3, 0);
+            Set<CartItem> cartItems = genCartItems(user, 2, 0);
             user.getCart().addItems(cartItems);
 
             Mockito.when(userRepository.findById(user.getId()))
@@ -95,7 +98,15 @@ class OrderServiceTest {
 
             return cartItems;
         }
+    }
 
+    @Nested
+    class FindAllMyOrders{
+
+    }
+
+    @Nested
+    class FindAllOrders{
 
     }
 }
