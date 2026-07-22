@@ -42,7 +42,7 @@ class ProductServiceTest {
         @Test
         void shouldFindAllSuccessfully(){
 
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             List<Product> productList = List.of(product);
             Page<Product> page = new PageImpl<>(productList);
 
@@ -63,7 +63,7 @@ class ProductServiceTest {
 
         @Test
         void shouldFindByIdSuccessfully(){
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
 
             Mockito.when(productRepository.findById(product.getId()))
                     .thenReturn(Optional.of(product));
@@ -94,7 +94,7 @@ class ProductServiceTest {
 
         @Test
         void shouldCreateSuccessfully(){
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             CreateProductRequest request = new CreateProductRequest(
                     product.getName(),
                     product.getDescription(),
@@ -119,7 +119,7 @@ class ProductServiceTest {
 
         @Test
         void shouldEditSuccessfully(){
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             EditProductRequest request = new EditProductRequest(
                     "new_name",
                     null,
@@ -143,7 +143,7 @@ class ProductServiceTest {
 
         @Test
         void shouldThrowProductWasNotFound(){
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             EditProductRequest request = new EditProductRequest(
                     "new_name",
                     null,
@@ -172,7 +172,7 @@ class ProductServiceTest {
 
         @Test
         void shouldDeleteSuccessfully(){
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
 
             Mockito.when(productRepository.findById(product.getId()))
                     .thenReturn(Optional.of(product));

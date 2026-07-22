@@ -25,12 +25,12 @@ public class UtilsTest {
         return user;
     }
 
-    public static Product newProduct(){
+    public static Product newProduct(int quantity){
         return new Product(
                 "product_name",
                 "product_description",
                 BigDecimal.TEN,
-                5
+                quantity
         );
     }
 }

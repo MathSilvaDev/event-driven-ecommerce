@@ -50,7 +50,7 @@ class CartServiceTest {
         @Test
         void shouldFindAllSuccessfully(){
             User user = UtilsTest.newUser();
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
 
             List<CartItem> cartItems = List.of(
                     new CartItem(
@@ -121,7 +121,7 @@ class CartServiceTest {
         @Test
         void shouldCreateIfCartItemDoesNotExist(){
             User user = UtilsTest.newUser();
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
 
             UUID userId = user.getId();
             Long productId = product.getId();
@@ -152,7 +152,7 @@ class CartServiceTest {
         @Test
         void shouldUpdateIfItemCartExists(){
             User user = UtilsTest.newUser();
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 2);
 
@@ -192,7 +192,7 @@ class CartServiceTest {
         @Test
         void shouldChangeQuantitySuccessfully(){
             User user = UtilsTest.newUser();
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
@@ -218,7 +218,7 @@ class CartServiceTest {
         @Test
         void shouldDeleteWhenQuantityBecomesNegative(){
             User user = UtilsTest.newUser();
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
@@ -243,7 +243,7 @@ class CartServiceTest {
         @Test
         void shouldThrowIfQuantityIsUnavailable(){
             User user = UtilsTest.newUser();
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
@@ -274,7 +274,7 @@ class CartServiceTest {
         @Test
         void shouldToggleSuccessfully(){
             User user = UtilsTest.newUser();
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
@@ -304,7 +304,7 @@ class CartServiceTest {
         @Test
         void shouldDeleteCartItemSuccessfully(){
             User user = UtilsTest.newUser();
-            Product product = UtilsTest.newProduct();
+            Product product = UtilsTest.newProduct(5);
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 

@@ -6,9 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "cart")
@@ -25,7 +23,7 @@ public class Cart {
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItems = new ArrayList<>();
+    private Set<CartItem> cartItems = new HashSet<>();
 
     public Cart(User user){
         this.user = user;
@@ -46,9 +44,6 @@ public class Cart {
     }
 
     public void removeItems(Collection<? extends CartItem> cartItems){
-        for(CartItem cartItem : cartItems){
-            this.cartItems.remove(cartItem);
-            cartItem.setCart(null);
-        }
+        this.cartItems.removeAll(cartItems);
     }
 }

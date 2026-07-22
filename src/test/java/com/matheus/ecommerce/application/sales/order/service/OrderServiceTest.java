@@ -16,10 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,11 +41,12 @@ class OrderServiceTest {
     class CreateOrder{
 
         @Test
-        void shouldCreateOrderSuccessfully(){
+        void shouldCreateOrder(){
             User user = UtilsTest.newUser();
-            List<CartItem> cartItems = genCartItems(user, 2);
+            Set<CartItem> cartItems = genCartItems(user, 2, 1);
             user.getCart().addItems(cartItems);
-            user.getCart().getCartItems().getFirst().toggleSelected();
+            user.getCart().getCartItems().stream()
+                    .toList().getFirst().toggleSelected();
 
             Mockito.when(userRepository.findById(user.getId()))
                     .thenReturn(Optional.of(user));
@@ -67,14 +67,27 @@ class OrderServiceTest {
 
         }
 
-        private List<CartItem> genCartItems(User user, int quantity){
+        @Test
+        void shouldThrowIfQuantityUnavailable(){
+            User user = UtilsTest.newUser();
+            Set<CartItem> cartItems = genCartItems(user, 3, 0);
+            user.getCart().addItems(cartItems);
 
-            List<CartItem> cartItems = new ArrayList<>();
+            Mockito.when(userRepository.findById(user.getId()))
+                    .thenReturn(Optional.of(user));
+
+            assertThrows(ResponseStatusException.class,
+                    () -> orderService.createOrder(user.getId()));
+        }
+
+        private Set<CartItem> genCartItems(User user, int quantity, int productQuantity){
+
+            Set<CartItem> cartItems = new HashSet<>();
 
             for (int i = 0; i < quantity; i++){
                 CartItem cartItem = new CartItem(
                         user.getCart(),
-                        UtilsTest.newProduct(),
+                        UtilsTest.newProduct(productQuantity),
                         1);
 
                 cartItems.add(cartItem);
