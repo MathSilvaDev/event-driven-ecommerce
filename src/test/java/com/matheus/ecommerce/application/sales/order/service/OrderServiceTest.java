@@ -4,9 +4,11 @@ import com.matheus.ecommerce.application.common.UtilsTest;
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
+import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
 import com.matheus.ecommerce.domain.sales.order.entity.Order;
+import com.matheus.ecommerce.domain.sales.order.entity.OrderItem;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
 import org.junit.jupiter.api.Nested;
@@ -16,6 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -54,7 +59,7 @@ class OrderServiceTest {
             assertEquals(3, user.getCart().getCartItems().size());
             assertEquals(0, user.getOrders().size());
 
-            OrderResponse response = orderService.createOrder(user.getId());
+            orderService.createOrder(user.getId());
 
             assertEquals(1, user.getCart().getCartItems().size());
             assertEquals(1, user.getOrders().size());
@@ -103,6 +108,30 @@ class OrderServiceTest {
     @Nested
     class FindAllMyOrders{
 
+        @Test
+        void shouldFindAllMyOrder(){
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct(5);
+            Order order = new Order(user,
+                    List.of(new OrderItem(product, product.getPrice(), 3)));
+            Page<Order> pageOrder = new PageImpl<>(List.of(order));
+
+            Mockito.when(userRepository.findById(user.getId()))
+                    .thenReturn(Optional.of(user));
+
+            Mockito.when(orderRepository.findByUser(
+                    Mockito.eq(user), Mockito.any(Pageable.class)))
+                    .thenReturn(pageOrder);
+
+            Page<OrderResponse> response =
+                    orderService.findAllMyOrders(user.getId(), 0, 10);
+
+            assertEquals(1 ,response.getSize());
+
+            Mockito.verify(userRepository).findById(user.getId());
+            Mockito.verify(orderRepository).findByUser(
+                    Mockito.eq(user), Mockito.any(Pageable.class));
+        }
     }
 
     @Nested
