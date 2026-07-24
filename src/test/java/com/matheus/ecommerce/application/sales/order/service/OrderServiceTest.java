@@ -110,7 +110,7 @@ class OrderServiceTest {
     class FindMyOrders{
 
         @Test
-        void shouldFindAllMyOrders(){
+        void shouldFindMyOrders(){
             User user = UtilsTest.newUser();
             Product product = UtilsTest.newProduct(5);
             Order order = new Order(user,
@@ -125,7 +125,7 @@ class OrderServiceTest {
                     .thenReturn(pageOrder);
 
             Page<OrderResponse> response =
-                    orderService.findAllMyOrders(user.getId(), 0, 10);
+                    orderService.findMyOrders(user.getId(), 0, 10);
 
             assertEquals(1 ,response.getSize());
 
@@ -136,7 +136,7 @@ class OrderServiceTest {
     }
 
     @Nested
-    class FindAllOrders{
+    class FindOrders {
 
         @Test
         void shouldFindOrdersByStatus(){
@@ -153,12 +153,31 @@ class OrderServiceTest {
                     .thenReturn(pageOrder);
 
             Page<OrderResponse> response =
-                    orderService.findAllOrders(0, 10, orderStatus);
+                    orderService.findOrders(0, 10, orderStatus);
 
             assertEquals(1 ,response.getSize());
 
             Mockito.verify(orderRepository).findByStatus(
                     Mockito.eq(orderStatus), Mockito.any(Pageable.class));
+        }
+
+        @Test
+        void shouldFindOrdersIfStatusIsNull(){
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct(5);
+            Order order = new Order(user,
+                    List.of(new OrderItem(product, product.getPrice(), 3)));
+            Page<Order> pageOrder = new PageImpl<>(List.of(order));
+
+            Mockito.when(orderRepository.findAll(Mockito.any(Pageable.class)))
+                    .thenReturn(pageOrder);
+
+            Page<OrderResponse> response =
+                    orderService.findOrders(0, 10, null);
+
+            assertEquals(1 ,response.getSize());
+
+            Mockito.verify(orderRepository).findAll(Mockito.any(Pageable.class));
         }
     }
 }

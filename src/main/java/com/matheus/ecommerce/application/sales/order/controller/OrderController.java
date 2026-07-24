@@ -33,24 +33,24 @@ public class OrderController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Page<OrderResponse>> findAllMyOrders(@AuthenticationPrincipal Jwt jwt,
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "10") int pageSize){
+    public ResponseEntity<Page<OrderResponse>> findMyOrders(@AuthenticationPrincipal Jwt jwt,
+                                                            @RequestParam(defaultValue = "0") int pageNumber,
+                                                            @RequestParam(defaultValue = "10") int pageSize){
 
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
 
         return ResponseEntity
-                .ok(orderService.findAllMyOrders(userId, pageNumber, pageSize));
+                .ok(orderService.findMyOrders(userId, pageNumber, pageSize));
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<OrderResponse>> findAllOrders(
+    public ResponseEntity<Page<OrderResponse>> findOrders(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) OrderStatus orderStatus){
 
         return ResponseEntity
-                .ok(orderService.findAllOrders(pageNumber, pageSize, orderStatus));
+                .ok(orderService.findOrders(pageNumber, pageSize, orderStatus));
     }
 }

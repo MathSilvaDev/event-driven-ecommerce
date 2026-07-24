@@ -75,7 +75,7 @@ public class OrderService {
         return toResponse(order);
     }
 
-    public Page<OrderResponse> findAllMyOrders(UUID userId, int pageNumber, int pageSize){
+    public Page<OrderResponse> findMyOrders(UUID userId, int pageNumber, int pageSize){
         User user = findUserById(userId);
 
         Pageable pageable = PageRequest.of(
@@ -89,8 +89,8 @@ public class OrderService {
 
     }
 
-    public Page<OrderResponse> findAllOrders(int pageNumber, int pageSize,
-                                             OrderStatus orderStatus){
+    public Page<OrderResponse> findOrders(int pageNumber, int pageSize,
+                                          OrderStatus orderStatus){
 
         Pageable pageable = PageRequest.of(
                 pageNumber,
