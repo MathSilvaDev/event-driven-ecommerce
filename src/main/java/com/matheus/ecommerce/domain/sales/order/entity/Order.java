@@ -42,4 +42,8 @@ public class Order {
         this.orderItems.addAll(orderItem);
         this.status = OrderStatus.PENDING_PAYMENT;
     }
+
+    public void changeStatus(OrderStatus status){
+        this.status = status;
+    }
 }

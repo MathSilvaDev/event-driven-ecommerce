@@ -53,4 +53,13 @@ public class OrderController {
         return ResponseEntity
                 .ok(orderService.findOrders(pageNumber, pageSize, orderStatus));
     }
+
+    @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> changePaidOrderToPreparing(@PathVariable Long id){
+
+        orderService.changePaidOrderToPreparing(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
