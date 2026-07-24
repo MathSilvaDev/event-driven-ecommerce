@@ -9,6 +9,7 @@ import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import com.matheus.ecommerce.domain.sales.cart.repository.CartItemRepository;
 import com.matheus.ecommerce.domain.sales.order.entity.Order;
 import com.matheus.ecommerce.domain.sales.order.entity.OrderItem;
+import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
 import org.junit.jupiter.api.Nested;
@@ -106,10 +107,10 @@ class OrderServiceTest {
     }
 
     @Nested
-    class FindAllMyOrders{
+    class FindMyOrders{
 
         @Test
-        void shouldFindAllMyOrder(){
+        void shouldFindAllMyOrders(){
             User user = UtilsTest.newUser();
             Product product = UtilsTest.newProduct(5);
             Order order = new Order(user,
@@ -137,5 +138,27 @@ class OrderServiceTest {
     @Nested
     class FindAllOrders{
 
+        @Test
+        void shouldFindOrdersByStatus(){
+            User user = UtilsTest.newUser();
+            Product product = UtilsTest.newProduct(5);
+            Order order = new Order(user,
+                    List.of(new OrderItem(product, product.getPrice(), 3)));
+            Page<Order> pageOrder = new PageImpl<>(List.of(order));
+
+            OrderStatus orderStatus = OrderStatus.PENDING_PAYMENT;
+
+            Mockito.when(orderRepository.findByStatus(
+                            Mockito.eq(orderStatus), Mockito.any(Pageable.class)))
+                    .thenReturn(pageOrder);
+
+            Page<OrderResponse> response =
+                    orderService.findAllOrders(0, 10, orderStatus);
+
+            assertEquals(1 ,response.getSize());
+
+            Mockito.verify(orderRepository).findByStatus(
+                    Mockito.eq(orderStatus), Mockito.any(Pageable.class));
+        }
     }
 }
