@@ -38,7 +38,7 @@ public class OrderService {
     @Transactional
     public OrderResponse createOrder(UUID userId){
 
-        User user = findUserById(userId);
+        User user = getUserById(userId);
 
         List<CartItem> cartItems = user.getCart().getCartItems()
                 .stream()
@@ -76,7 +76,7 @@ public class OrderService {
     }
 
     public Page<OrderResponse> findMyOrders(UUID userId, int pageNumber, int pageSize){
-        User user = findUserById(userId);
+        User user = getUserById(userId);
 
         Pageable pageable = PageRequest.of(
                 pageNumber,
@@ -107,18 +107,23 @@ public class OrderService {
                 .map(this::toResponse);
 
     }
-
     @Transactional
     public void changePaidOrderToPreparing(Long id){
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Order not found"));
+        Order order = getOrderById(id);
 
         if(order.getStatus() != OrderStatus.PAID){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
         order.changeStatus(OrderStatus.PREPARING);
+    }
+
+    @Transactional
+    public void simulatePayment(Long id){
+        Order order = getOrderById(id);
+        order.changeStatus(OrderStatus.PAID);
+
+        //kafkatemplate <String, Order> here to reduce quantity to later
     }
 
     private OrderResponse toResponse(Order order){
@@ -157,8 +162,14 @@ public class OrderService {
         );
     }
 
-    private User findUserById(UUID userId){
+    private User getUserById(UUID userId){
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    private Order getOrderById(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Order not found"));
     }
 }

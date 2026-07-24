@@ -33,9 +33,10 @@ public class OrderController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Page<OrderResponse>> findMyOrders(@AuthenticationPrincipal Jwt jwt,
-                                                            @RequestParam(defaultValue = "0") int pageNumber,
-                                                            @RequestParam(defaultValue = "10") int pageSize){
+    public ResponseEntity<Page<OrderResponse>> findMyOrders(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize){
 
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
 
@@ -57,9 +58,13 @@ public class OrderController {
     @PostMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> changePaidOrderToPreparing(@PathVariable Long id){
-
         orderService.changePaidOrderToPreparing(id);
+        return ResponseEntity.noContent().build();
+    }
 
+    @PostMapping("/{id}/simulate-payment")
+    public ResponseEntity<Void> simulatePayment(@PathVariable Long id){
+        orderService.simulatePayment(id);
         return ResponseEntity.noContent().build();
     }
 }
