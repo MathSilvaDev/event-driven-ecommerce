@@ -109,7 +109,9 @@ public class OrderService {
     }
     @Transactional
     public void changePaidOrderToPreparing(Long id){
-        Order order = getOrderById(id);
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Order not found"));
 
         if(order.getStatus() != OrderStatus.PAID){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -119,10 +121,12 @@ public class OrderService {
     }
 
     @Transactional
-    public void simulatePayment(Long id){
-        Order order = getOrderById(id);
-        order.changeStatus(OrderStatus.PAID);
+    public void simulatePayment(UUID userId, Long id){
+        Order order = orderRepository.findByIdAndUser_Id(id, userId)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, "Order not found"));
 
+        order.changeStatus(OrderStatus.PAID);
         //kafkatemplate <String, Order> here to reduce quantity to later
     }
 
@@ -165,11 +169,5 @@ public class OrderService {
     private User getUserById(UUID userId){
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-    }
-
-    private Order getOrderById(Long id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Order not found"));
     }
 }

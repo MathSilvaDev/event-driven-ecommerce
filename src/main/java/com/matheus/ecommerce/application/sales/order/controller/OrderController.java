@@ -63,8 +63,11 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/simulate-payment")
-    public ResponseEntity<Void> simulatePayment(@PathVariable Long id){
-        orderService.simulatePayment(id);
+    public ResponseEntity<Void> simulatePayment(@AuthenticationPrincipal Jwt jwt,
+                                                @PathVariable Long id){
+        UUID userId = AuthUtils.getUserIdByJwt(jwt);
+        orderService.simulatePayment(userId, id);
+
         return ResponseEntity.noContent().build();
     }
 }
