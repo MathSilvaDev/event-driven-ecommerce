@@ -12,9 +12,11 @@ import com.matheus.ecommerce.domain.sales.order.entity.OrderItem;
 import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
+import com.matheus.ecommerce.infrastructure.kafka.order.producer.OrderProducer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -39,6 +41,8 @@ class OrderServiceTest {
     private OrderItemRepository orderItemRepository;
     @Mock
     private CartItemRepository cartItemRepository;
+    @Mock
+    private OrderProducer orderProducer;
 
     @InjectMocks
     private OrderService orderService;
@@ -60,7 +64,7 @@ class OrderServiceTest {
             assertEquals(3, user.getCart().getCartItems().size());
             assertEquals(0, user.getOrders().size());
 
-            orderService.createOrder(user.getId());
+            OrderResponse response = orderService.createOrder(user.getId());
 
             assertEquals(1, user.getCart().getCartItems().size());
             assertEquals(1, user.getOrders().size());
@@ -73,6 +77,9 @@ class OrderServiceTest {
             Mockito.verify(orderItemRepository).saveAll(Mockito.anyCollection());
             Mockito.verify(orderRepository).save(Mockito.any(Order.class));
             Mockito.verify(cartItemRepository).deleteAll(cartItemsSelected);
+
+            Mockito.verify(orderProducer)
+                    .sendOrderCreated(response.id().toString());
 
         }
 
@@ -113,8 +120,10 @@ class OrderServiceTest {
         void shouldFindMyOrders(){
             User user = UtilsTest.newUser();
             Product product = UtilsTest.newProduct(5);
-            Order order = new Order(user,
-                    List.of(new OrderItem(product, product.getPrice(), 3)));
+            Order order = new Order(user);
+            OrderItem orderItem =
+                    new OrderItem(order, product, product.getPrice(), 3);
+            order.addOrderItems(List.of(orderItem));
             Page<Order> pageOrder = new PageImpl<>(List.of(order));
 
             Mockito.when(userRepository.findById(user.getId()))
@@ -142,8 +151,10 @@ class OrderServiceTest {
         void shouldFindOrdersByStatus(){
             User user = UtilsTest.newUser();
             Product product = UtilsTest.newProduct(5);
-            Order order = new Order(user,
-                    List.of(new OrderItem(product, product.getPrice(), 3)));
+            Order order = new Order(user);
+            OrderItem orderItem =
+                    new OrderItem(order, product, product.getPrice(), 3);
+            order.addOrderItems(List.of(orderItem));
             Page<Order> pageOrder = new PageImpl<>(List.of(order));
 
             OrderStatus orderStatus = OrderStatus.PENDING_PAYMENT;
@@ -165,8 +176,10 @@ class OrderServiceTest {
         void shouldFindOrdersIfStatusIsNull(){
             User user = UtilsTest.newUser();
             Product product = UtilsTest.newProduct(5);
-            Order order = new Order(user,
-                    List.of(new OrderItem(product, product.getPrice(), 3)));
+            Order order = new Order(user);
+            OrderItem orderItem =
+                    new OrderItem(order, product, product.getPrice(), 3);
+            order.addOrderItems(List.of(orderItem));
             Page<Order> pageOrder = new PageImpl<>(List.of(order));
 
             Mockito.when(orderRepository.findAll(Mockito.any(Pageable.class)))

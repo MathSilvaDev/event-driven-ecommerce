@@ -19,7 +19,7 @@ public class JwtService {
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
-    private static final long ACCESS_TOKEN_EXPIRES_IN = 300L; //5 min
+    private static final long ACCESS_TOKEN_EXPIRES_IN = 600L; //10 min
     private static final long REFRESH_TOKEN_EXPIRES_IN = 60L * 60L * 24L * 7L; //1 week
 
     public TokenDTO generateAccessToken(User user){

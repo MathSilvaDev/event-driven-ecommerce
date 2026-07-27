@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -27,7 +28,8 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order", orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order",
+            orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
@@ -37,10 +39,13 @@ public class Order {
     @Column(updatable = false)
     private Instant createdAt;
 
-    public Order(User user, List<OrderItem> orderItem){
+    public Order(User user){
         this.user = user;
-        this.orderItems.addAll(orderItem);
         this.status = OrderStatus.PENDING_PAYMENT;
+    }
+
+    public void addOrderItems(Collection<? extends OrderItem> orderItems){
+        this.orderItems.addAll(orderItems);
     }
 
     public void changeStatus(OrderStatus status){

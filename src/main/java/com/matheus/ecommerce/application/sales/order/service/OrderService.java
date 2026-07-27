@@ -12,6 +12,7 @@ import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
 import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
+import com.matheus.ecommerce.infrastructure.kafka.order.producer.OrderProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final CartItemRepository cartItemRepository;
+    private final OrderProducer orderProducer;
 
     @Transactional
     public OrderResponse createOrder(UUID userId){
@@ -45,32 +47,39 @@ public class OrderService {
                 .filter(CartItem::isSelected)
                 .toList();
 
+        if(cartItems.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cart is empty");
+        }
+
         cartItems.forEach((i) -> {
-            if(i.getProduct().isUnavailable(i.getQuantity())){
+            if(!i.getProduct().isAvailable(i.getQuantity())){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "One or more products have an unavailable quantity");
             }else{
                 i.getProduct().removeQuantity(i.getQuantity());
             }
         });
+        Order order = new Order(user);
 
         List<OrderItem> orderItems = cartItems
                 .stream()
                 .map(i -> new OrderItem(
+                        order,
                         i.getProduct(),
                         i.getProduct().getPrice(),
-                        i.getQuantity()))
+                        i.getQuantity()
+                        ))
                 .toList();
 
+        order.addOrderItems(orderItems);
+        orderRepository.save(order);
         orderItemRepository.saveAll(orderItems);
 
-        Order order = new Order(user, orderItems);
         user.getOrders().add(order);
-
-        orderRepository.save(order);
-
         user.getCart().removeItems(cartItems);
         cartItemRepository.deleteAll(cartItems);
+
+        orderProducer.sendOrderCreated(order.getId().toString());
 
         return toResponse(order);
     }
@@ -133,18 +142,17 @@ public class OrderService {
     private OrderResponse toResponse(Order order){
         List<OrderItem> orderItems = order.getOrderItems();
 
-        BigDecimal price = orderItems.stream()
-                .map(OrderItem::getPrice)
+        BigDecimal totalPrice = orderItems.stream()
+                .map(item ->
+                        item.getPrice().multiply(BigDecimal.valueOf(
+                                item.getQuantity()
+                        )))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        int quantity = orderItems.stream()
-                .mapToInt(OrderItem::getQuantity)
-                .sum();
 
         return new OrderResponse(
                 order.getId(),
                 order.getStatus(),
-                price.multiply(BigDecimal.valueOf(quantity)),
+                totalPrice,
 
                 orderItems
                         .stream()

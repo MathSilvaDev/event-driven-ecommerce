@@ -50,7 +50,7 @@ public class CartService {
 
         Product product = getProductById(request.productId());
 
-        if(product.isUnavailable(request.quantity())){
+        if(!product.isAvailable(request.quantity())){
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Product quantity unavailable");
         }
@@ -64,6 +64,13 @@ public class CartService {
         CartItem cartItem;
         if(cartItemOpt.isPresent()){
             cartItem = cartItemOpt.get();
+            int totalQuantity = request.quantity() + cartItem.getQuantity();
+
+            if(!product.isAvailable(totalQuantity)){
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Product quantity unavailable");
+            }
+
             cartItem.addQuantity(request.quantity());
         } else{
             cartItem = new CartItem(
@@ -96,7 +103,7 @@ public class CartService {
             return;
         }
 
-        if(cartItem.getProduct().isUnavailable(newQuantity)){
+        if(!cartItem.getProduct().isAvailable(newQuantity)){
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Product quantity unavailable");
         }

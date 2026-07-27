@@ -29,10 +29,11 @@ public class OrderItem {
     private Integer quantity;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    public OrderItem(Product product, BigDecimal price, Integer quantity){
+    public OrderItem(Order order, Product product, BigDecimal price, Integer quantity){
+        this.order = order;
         this.product = product;
         this.price = price;
         this.quantity = quantity;

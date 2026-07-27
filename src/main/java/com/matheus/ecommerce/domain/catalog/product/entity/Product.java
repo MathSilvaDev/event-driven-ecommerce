@@ -63,7 +63,4 @@ public class Product {
         return quantity > 0 && quantity >= newQuantity;
     }
 
-    public boolean isUnavailable(int newQuantity){
-        return quantity <= 0 || quantity < newQuantity;
-    }
 }
