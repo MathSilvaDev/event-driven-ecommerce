@@ -6,13 +6,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class OrderCreateConsumer {
+public class OrderConsumer {
 
     @KafkaListener(
             topics = "order-created",
             groupId = "order-group"
     )
-    public void consume(String orderId){
+    public void createdConsume(String orderId){
         log.info("---RECEIVED-ORDER---: {}", orderId);
+    }
+
+    @KafkaListener(
+            topics = "order-paid",
+            groupId = "order-group"
+    )
+    public void paidConsume(String orderId){
+        log.info("---ORDER-PAID---: {}", orderId);
     }
 }

@@ -10,11 +10,15 @@ public class OrderProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
+    private void sendTemplate(String topic, String key, String data){
+        kafkaTemplate.send(topic, key, data);
+    }
+
     public void sendOrderCreated(String orderId){
-        kafkaTemplate.send(
-                "order-created",
-                orderId,
-                orderId
-        );
+        sendTemplate("order-created", orderId, orderId);
+    }
+
+    public void sendOrderPaid(String orderId) {
+        sendTemplate("order-paid", orderId, orderId);
     }
 }

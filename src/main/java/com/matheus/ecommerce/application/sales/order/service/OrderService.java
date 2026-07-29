@@ -19,14 +19,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -139,7 +136,7 @@ public class OrderService {
                                 HttpStatus.NOT_FOUND, "Order not found"));
 
         order.setStatus(OrderStatus.PAID);
-        //kafkatemplate <String, Order> here to reduce quantity to later
+        orderProducer.sendOrderPaid(order.getId().toString());
     }
 
     private OrderResponse toResponse(Order order){
