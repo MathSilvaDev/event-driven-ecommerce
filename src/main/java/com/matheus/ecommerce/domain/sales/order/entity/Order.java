@@ -1,7 +1,6 @@
 package com.matheus.ecommerce.domain.sales.order.entity;
 
 import com.matheus.ecommerce.domain.auth.entity.User;
-import com.matheus.ecommerce.domain.sales.cart.entity.CartItem;
 import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -48,7 +47,7 @@ public class Order {
         this.orderItems.addAll(orderItems);
     }
 
-    public void changeStatus(OrderStatus status){
+    public void setStatus(OrderStatus status){
         this.status = status;
     }
 }
