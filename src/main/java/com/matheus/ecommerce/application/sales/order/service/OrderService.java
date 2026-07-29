@@ -117,16 +117,9 @@ public class OrderService {
 
     }
     @Transactional
-    public void changePaidOrderToPreparing(Long id){
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Order not found"));
-
-        if(order.getStatus() != OrderStatus.PAID){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
-        order.setStatus(OrderStatus.PREPARING);
+    public void changePaidOrderToPreparing(List<Long> orderIds){
+        orderRepository.findAllByIdAndStatus(orderIds, OrderStatus.PAID)
+                .forEach(order -> order.setStatus(OrderStatus.PREPARING));
     }
 
     @Transactional
