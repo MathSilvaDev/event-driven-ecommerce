@@ -1,6 +1,7 @@
 package com.matheus.ecommerce.application.sales.order.service;
 
 import com.matheus.ecommerce.domain.sales.order.entity.Order;
+import com.matheus.ecommerce.domain.sales.order.entity.OrderItem;
 import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
 import com.matheus.ecommerce.infrastructure.kafka.order.consumer.OrderConsumer;
@@ -35,6 +36,14 @@ public class OrderSchedulerService {
 
         orders.forEach(order -> {
                 order.setStatus(OrderStatus.EXPIRED);
+
+                for(OrderItem orderItem : order.getOrderItems()){
+                    int quantity =
+                            orderItem.getProduct().getQuantity() + orderItem.getQuantity();
+
+                    orderItem.getProduct().setQuantity(quantity);
+                }
+
                 orderProducer.sendOrderExpired(order.getId());
         });
     }

@@ -55,8 +55,8 @@ public class Product {
         this.quantity = quantity == null ? this.quantity : quantity;
     }
 
-    public void removeQuantity(int quantity){
-        this.quantity -= quantity;
+    public void setQuantity(int quantity){
+        this.quantity = quantity;
     }
 
     public boolean isAvailable(int newQuantity){

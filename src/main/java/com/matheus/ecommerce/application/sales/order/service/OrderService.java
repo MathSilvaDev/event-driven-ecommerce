@@ -56,7 +56,8 @@ public class OrderService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "One or more products have an unavailable quantity");
             }else{
-                i.getProduct().removeQuantity(i.getQuantity());
+                int quantity = i.getProduct().getQuantity() - i.getQuantity();
+                i.getProduct().setQuantity(quantity);
             }
         });
         Order order = new Order(user);
