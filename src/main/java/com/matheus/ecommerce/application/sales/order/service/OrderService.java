@@ -79,7 +79,7 @@ public class OrderService {
         user.getCart().removeItems(cartItems);
         cartItemRepository.deleteAll(cartItems);
 
-        orderProducer.sendOrderCreated(order.getId().toString());
+        orderProducer.sendOrderCreated(order.getId());
 
         return toResponse(order);
     }
@@ -126,7 +126,11 @@ public class OrderService {
                     HttpStatus.NOT_FOUND, "No paid orders selected");
         }
 
-        orders.forEach(order -> order.setStatus(OrderStatus.PREPARING));
+        orders.forEach(order -> {
+            order.setStatus(OrderStatus.PREPARING);
+            orderProducer.sendOrderToPreparing(order.getId());
+        });
+
     }
 
     @Transactional
@@ -135,8 +139,13 @@ public class OrderService {
                         .orElseThrow(() -> new ResponseStatusException(
                                 HttpStatus.NOT_FOUND, "Order not found"));
 
+        if(order.getStatus() != OrderStatus.PENDING_PAYMENT){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Order status must be PENDING_PAYMENT");
+        }
+
         order.setStatus(OrderStatus.PAID);
-        orderProducer.sendOrderPaid(order.getId().toString());
+        orderProducer.sendOrderPaid(order.getId());
     }
 
     private OrderResponse toResponse(Order order){

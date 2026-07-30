@@ -12,7 +12,7 @@ public class OrderConsumer {
             topics = "order-created",
             groupId = "order-group"
     )
-    public void createdConsume(String orderId){
+    public void createdConsume(Long orderId){
         log.info("---RECEIVED-ORDER---: {}", orderId);
     }
 
@@ -20,7 +20,15 @@ public class OrderConsumer {
             topics = "order-paid",
             groupId = "order-group"
     )
-    public void paidConsume(String orderId){
+    public void paidConsume(Long orderId){
         log.info("---ORDER-PAID---: {}", orderId);
+    }
+
+    @KafkaListener(
+            topics = "order-to-preparing",
+            groupId = "order-group"
+    )
+    public void toPreparingConsume(Long orderId){
+        log.info("---ORDER-STATUS-TO-PREPARING---: {}", orderId);
     }
 }

@@ -79,7 +79,7 @@ class OrderServiceTest {
             Mockito.verify(cartItemRepository).deleteAll(cartItemsSelected);
 
             Mockito.verify(orderProducer)
-                    .sendOrderCreated(response.id().toString());
+                    .sendOrderCreated(response.id());
 
         }
 

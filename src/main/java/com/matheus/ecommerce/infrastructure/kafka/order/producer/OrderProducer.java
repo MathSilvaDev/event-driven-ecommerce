@@ -8,17 +8,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderProducer {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Long> kafkaTemplate;
 
-    private void sendTemplate(String topic, String key, String data){
-        kafkaTemplate.send(topic, key, data);
+    private void sendTemplate(String topic, Long data){
+        kafkaTemplate.send(topic, data.toString(), data);
     }
 
-    public void sendOrderCreated(String orderId){
-        sendTemplate("order-created", orderId, orderId);
+    public void sendOrderCreated(Long orderId){
+        sendTemplate("order-created", orderId);
     }
 
-    public void sendOrderPaid(String orderId) {
-        sendTemplate("order-paid", orderId, orderId);
+    public void sendOrderPaid(Long orderId) {
+        sendTemplate("order-paid", orderId);
+    }
+
+    public void sendOrderToPreparing(Long orderId){
+        sendTemplate("order-to-preparing", orderId);
     }
 }
