@@ -3,7 +3,6 @@ package com.matheus.ecommerce.application.sales.order.controller;
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderResponse;
 import com.matheus.ecommerce.application.sales.order.service.OrderService;
 import com.matheus.ecommerce.common.security.AuthUtils;
-import com.matheus.ecommerce.domain.sales.order.entity.Order;
 import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

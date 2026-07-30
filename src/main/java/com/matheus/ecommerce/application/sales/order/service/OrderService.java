@@ -118,8 +118,15 @@ public class OrderService {
     }
     @Transactional
     public void changePaidOrderToPreparing(List<Long> orderIds){
-        orderRepository.findAllByIdAndStatus(orderIds, OrderStatus.PAID)
-                .forEach(order -> order.setStatus(OrderStatus.PREPARING));
+        List<Order> orders =
+                orderRepository.findByIdInAndStatus(orderIds, OrderStatus.PAID);
+
+        if(orders.isEmpty()){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "No paid orders selected");
+        }
+
+        orders.forEach(order -> order.setStatus(OrderStatus.PREPARING));
     }
 
     @Transactional
