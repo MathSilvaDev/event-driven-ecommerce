@@ -10,8 +10,8 @@ public class OrderProducer {
 
     private final KafkaTemplate<String, Long> kafkaTemplate;
 
-    private void sendTemplate(String topic, Long data){
-        kafkaTemplate.send(topic, data.toString(), data);
+    private void sendTemplate(String topic, Long orderId){
+        kafkaTemplate.send(topic, orderId.toString(), orderId);
     }
 
     public void sendOrderCreated(Long orderId){
@@ -24,5 +24,9 @@ public class OrderProducer {
 
     public void sendOrderToPreparing(Long orderId){
         sendTemplate("order-to-preparing", orderId);
+    }
+
+    public void sendOrderExpired(Long orderId){
+        sendTemplate("order-expired", orderId);
     }
 }

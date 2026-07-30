@@ -3,6 +3,8 @@ package com.matheus.ecommerce.application.sales.order.service;
 import com.matheus.ecommerce.domain.sales.order.entity.Order;
 import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
+import com.matheus.ecommerce.infrastructure.kafka.order.consumer.OrderConsumer;
+import com.matheus.ecommerce.infrastructure.kafka.order.producer.OrderProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,8 +21,9 @@ import java.util.List;
 public class OrderSchedulerService {
 
     private final OrderRepository orderRepository;
+    private final OrderProducer orderProducer;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedDelay = 60000)
     @Transactional
     public void expiredPendingOrders(){
         Instant limit = Instant.now().minus(24, ChronoUnit.HOURS);
@@ -32,7 +35,7 @@ public class OrderSchedulerService {
 
         orders.forEach(order -> {
                 order.setStatus(OrderStatus.EXPIRED);
-                log.info("Order {} expired",order.getId());
+                orderProducer.sendOrderExpired(order.getId());
         });
     }
 }

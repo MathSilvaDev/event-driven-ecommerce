@@ -13,7 +13,7 @@ public class OrderConsumer {
             groupId = "order-group"
     )
     public void createdConsume(Long orderId){
-        log.info("---RECEIVED-ORDER---: {}", orderId);
+        log.info("---RECEIVED_ORDER---: {}", orderId);
     }
 
     @KafkaListener(
@@ -21,7 +21,7 @@ public class OrderConsumer {
             groupId = "order-group"
     )
     public void paidConsume(Long orderId){
-        log.info("---ORDER-PAID---: {}", orderId);
+        log.info("---ORDER_PAID---: {}", orderId);
     }
 
     @KafkaListener(
@@ -29,6 +29,14 @@ public class OrderConsumer {
             groupId = "order-group"
     )
     public void toPreparingConsume(Long orderId){
-        log.info("---ORDER-STATUS-TO-PREPARING---: {}", orderId);
+        log.info("---ORDER_STATUS_TO_PREPARING---: {}", orderId);
+    }
+
+    @KafkaListener(
+            topics = "order-expired",
+            groupId = "order-group"
+    )
+    public void expiredConsume(Long orderId){
+        log.info("---ORDER_EXPIRED_DUE_TO_NON_PAYMENT---: {}", orderId);
     }
 }
