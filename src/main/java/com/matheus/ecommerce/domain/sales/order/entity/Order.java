@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
@@ -32,6 +33,7 @@ public class Order {
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
+    @Setter
     private OrderStatus status;
 
     @CreationTimestamp
@@ -45,9 +47,5 @@ public class Order {
 
     public void addOrderItems(Collection<? extends OrderItem> orderItems){
         this.orderItems.addAll(orderItems);
-    }
-
-    public void setStatus(OrderStatus status){
-        this.status = status;
     }
 }

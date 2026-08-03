@@ -22,11 +22,15 @@ public class OrderProducer {
         sendTemplate("order-paid", orderId);
     }
 
+    public void sendOrderExpired(Long orderId){
+        sendTemplate("order-expired", orderId);
+    }
+
     public void sendOrderToPreparing(Long orderId){
         sendTemplate("order-to-preparing", orderId);
     }
 
-    public void sendOrderExpired(Long orderId){
-        sendTemplate("order-expired", orderId);
+    public void sendOrderShipment(Long orderId){
+        sendTemplate("order-shipment", orderId);
     }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
@@ -32,6 +33,7 @@ public class Product {
     private BigDecimal price;
 
     @Column(nullable = false)
+    @Setter
     private Integer quantity;
 
     @CreationTimestamp
@@ -53,10 +55,6 @@ public class Product {
         this.description = description == null ? this.description : description;
         this.price = price == null ? this.price : price;
         this.quantity = quantity == null ? this.quantity : quantity;
-    }
-
-    public void setQuantity(int quantity){
-        this.quantity = quantity;
     }
 
     public boolean isAvailable(int newQuantity){

@@ -13,7 +13,7 @@ public class OrderConsumer {
             groupId = "order-group"
     )
     public void createdConsume(Long orderId){
-        log.info("---RECEIVED_ORDER---: {}", orderId);
+        log.info("---RECEIVED_ORDER---ID: {}", orderId);
     }
 
     @KafkaListener(
@@ -21,15 +21,7 @@ public class OrderConsumer {
             groupId = "order-group"
     )
     public void paidConsume(Long orderId){
-        log.info("---ORDER_PAID---: {}", orderId);
-    }
-
-    @KafkaListener(
-            topics = "order-to-preparing",
-            groupId = "order-group"
-    )
-    public void toPreparingConsume(Long orderId){
-        log.info("---ORDER_STATUS_TO_PREPARING---: {}", orderId);
+        log.info("---ORDER_PAID---ID: {}", orderId);
     }
 
     @KafkaListener(
@@ -37,6 +29,22 @@ public class OrderConsumer {
             groupId = "order-group"
     )
     public void expiredConsume(Long orderId){
-        log.info("---ORDER_EXPIRED_DUE_TO_NON_PAYMENT---: {}", orderId);
+        log.info("---ORDER_EXPIRED_DUE_TO_NON_PAYMENT---ID: {}", orderId);
+    }
+
+    @KafkaListener(
+            topics = "order-to-preparing",
+            groupId = "order-group"
+    )
+    public void toPreparingConsume(Long orderId){
+        log.info("---ORDER_STATUS_TO_PREPARING---ID: {}", orderId);
+    }
+
+    @KafkaListener(
+            topics = "order-shipment",
+            groupId = "order-group"
+    )
+    public void shipmentConsume(Long orderId){
+        log.info("---ORDER_DISPATCHED---ID: {}", orderId);
     }
 }

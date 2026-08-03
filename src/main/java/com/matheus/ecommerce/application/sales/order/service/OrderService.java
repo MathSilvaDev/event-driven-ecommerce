@@ -120,7 +120,7 @@ public class OrderService {
     @Transactional
     public void changePaidOrderToPreparing(List<Long> orderIds){
         List<Order> orders =
-                orderRepository.findByIdInAndStatus(orderIds, OrderStatus.PAID);
+                orderRepository.findAllByIdInAndStatus(orderIds, OrderStatus.PAID);
 
         if(orders.isEmpty()){
             throw new ResponseStatusException(
@@ -131,7 +131,6 @@ public class OrderService {
             order.setStatus(OrderStatus.PREPARING);
             orderProducer.sendOrderToPreparing(order.getId());
         });
-
     }
 
     @Transactional
@@ -147,6 +146,21 @@ public class OrderService {
 
         order.setStatus(OrderStatus.PAID);
         orderProducer.sendOrderPaid(order.getId());
+    }
+
+    public void shipment(List<Long> orderIds){
+        List<Order> orders =
+                orderRepository.findAllByIdInAndStatus(orderIds, OrderStatus.PREPARING);
+
+        if(orders.isEmpty()){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "No preparing orders selected");
+        }
+
+        orders.forEach(order -> {
+            order.setStatus(OrderStatus.DISPATCHED);
+            orderProducer.sendOrderShipment(order.getId());
+        });
     }
 
     private OrderResponse toResponse(Order order){

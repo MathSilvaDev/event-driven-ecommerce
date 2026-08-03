@@ -68,7 +68,7 @@ public class OrderController {
     @PostMapping("/simulate-shipment")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> simulateShipment(@RequestBody List<Long> orderIds){
-        //later
+        orderService.shipment(orderIds);
         return ResponseEntity.noContent().build();
     }
 
