@@ -148,7 +148,8 @@ public class OrderService {
         orderProducer.sendOrderPaid(order.getId());
     }
 
-    public void shipment(List<Long> orderIds){
+    @Transactional
+    public void simulateShipment(List<Long> orderIds){
         List<Order> orders =
                 orderRepository.findAllByIdInAndStatus(orderIds, OrderStatus.PREPARING);
 
@@ -161,6 +162,16 @@ public class OrderService {
             order.setStatus(OrderStatus.DISPATCHED);
             orderProducer.sendOrderShipment(order.getId());
         });
+    }
+
+    @Transactional
+    public void simulateDelivered(Long id){
+        Order orders = orderRepository.findByIdAndStatus(id, OrderStatus.DISPATCHED)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "OrderStatus is not DISPATCHED"));
+
+        orders.setStatus(OrderStatus.DELIVERED);
+        orderProducer.sendOrderDelivered(id);
     }
 
     private OrderResponse toResponse(Order order){

@@ -47,4 +47,12 @@ public class OrderConsumer {
     public void shipmentConsume(Long orderId){
         log.info("---ORDER_DISPATCHED---ID: {}", orderId);
     }
+
+    @KafkaListener(
+            topics = "order-delivered",
+            groupId = "order-group"
+    )
+    public void deliveredConsume(Long orderId){
+        log.info("---ORDER_DELIVERED---ID: {}", orderId);
+    }
 }

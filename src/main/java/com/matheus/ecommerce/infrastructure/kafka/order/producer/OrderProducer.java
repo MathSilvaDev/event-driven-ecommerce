@@ -33,4 +33,8 @@ public class OrderProducer {
     public void sendOrderShipment(Long orderId){
         sendTemplate("order-shipment", orderId);
     }
+
+    public void sendOrderDelivered(Long orderId){
+        sendTemplate("order-delivered", orderId);
+    }
 }
