@@ -145,14 +145,10 @@ public class OrderService {
 
     @Transactional
     public void simulatePayment(UUID userId, Long id){
-        Order order = orderRepository.findByIdAndUser_Id(id, userId)
-                        .orElseThrow(() -> new ResponseStatusException(
-                                HttpStatus.NOT_FOUND, "Order not found"));
-
-        if(order.getStatus() != OrderStatus.PENDING_PAYMENT){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Order status must be PENDING_PAYMENT");
-        }
+        Order order = orderRepository
+                .findByIdAndUser_IdAndStatus(id, userId, OrderStatus.PENDING_PAYMENT)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "This Order(Status) in not (PENDING_PAYMENT)"));
 
         order.setStatus(OrderStatus.PAID);
         orderProducer.sendOrderPaid(order.getId());
@@ -185,13 +181,23 @@ public class OrderService {
     }
 
     @Transactional
-    public void cancelOrderIfIsNotPaid(Long id){
-        Order order = orderRepository.findByIdAndStatus(id, OrderStatus.PENDING_PAYMENT)
+    public void cancelOrderIfIsNotPaid(UUID userId, Long id){
+        Order order = orderRepository
+                .findByIdAndUser_IdAndStatus(id, userId, OrderStatus.PENDING_PAYMENT)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "OrderStatus is not PENDING_PAYMENT"));
 
         order.setStatus(OrderStatus.CANCELED);
+        returnOrder(order);
+
         orderProducer.sendOrderCanceled(id);
+    }
+
+    protected static void returnOrder(Order order) {
+        for(OrderItem orderItem : order.getOrderItems()){
+            int quantity = orderItem.getProduct().getQuantity() + orderItem.getQuantity();
+            orderItem.getProduct().setQuantity(quantity);
+        }
     }
 
     private OrderResponse toResponse(Order order){

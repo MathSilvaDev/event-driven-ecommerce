@@ -87,8 +87,11 @@ public class OrderController {
     }
 
     @PatchMapping("/cancel/{id}")
-    public ResponseEntity<Void> cancelOrderIfIsNotPaid(@PathVariable Long id){
-        orderService.cancelOrderIfIsNotPaid(id);
+    public ResponseEntity<Void> cancelOrderIfIsNotPaid(@AuthenticationPrincipal Jwt jwt,
+                                                       @PathVariable Long id){
+        UUID userId = AuthUtils.getUserIdByJwt(jwt);
+
+        orderService.cancelOrderIfIsNotPaid(userId, id);
         return ResponseEntity.noContent().build();
     }
 }

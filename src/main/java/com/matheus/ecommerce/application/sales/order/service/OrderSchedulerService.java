@@ -36,15 +36,11 @@ public class OrderSchedulerService {
 
         orders.forEach(order -> {
                 order.setStatus(OrderStatus.EXPIRED);
-
-                for(OrderItem orderItem : order.getOrderItems()){
-                    int quantity =
-                            orderItem.getProduct().getQuantity() + orderItem.getQuantity();
-
-                    orderItem.getProduct().setQuantity(quantity);
-                }
+                OrderService.returnOrder(order);
 
                 orderProducer.sendOrderExpired(order.getId());
         });
     }
+
+
 }
