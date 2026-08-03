@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -122,7 +123,7 @@ class OrderServiceTest {
             Order order = new Order(user);
             OrderItem orderItem =
                     new OrderItem(order, product, product.getPrice(), 3);
-            order.addOrderItems(List.of(orderItem));
+            order.addOrderItems(List.of(orderItem), BigDecimal.TEN, BigDecimal.TWO);
             Page<Order> pageOrder = new PageImpl<>(List.of(order));
 
             Mockito.when(userRepository.findById(user.getId()))
@@ -153,7 +154,7 @@ class OrderServiceTest {
             Order order = new Order(user);
             OrderItem orderItem =
                     new OrderItem(order, product, product.getPrice(), 3);
-            order.addOrderItems(List.of(orderItem));
+            order.addOrderItems(List.of(orderItem), BigDecimal.TEN, BigDecimal.TWO);
             Page<Order> pageOrder = new PageImpl<>(List.of(order));
 
             OrderStatus orderStatus = OrderStatus.PENDING_PAYMENT;
@@ -178,7 +179,7 @@ class OrderServiceTest {
             Order order = new Order(user);
             OrderItem orderItem =
                     new OrderItem(order, product, product.getPrice(), 3);
-            order.addOrderItems(List.of(orderItem));
+            order.addOrderItems(List.of(orderItem), BigDecimal.TEN, BigDecimal.TWO);
             Page<Order> pageOrder = new PageImpl<>(List.of(order));
 
             Mockito.when(orderRepository.findAll(Mockito.any(Pageable.class)))

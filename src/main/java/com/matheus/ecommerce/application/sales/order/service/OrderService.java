@@ -72,7 +72,17 @@ public class OrderService {
                         ))
                 .toList();
 
-        order.addOrderItems(orderItems);
+        BigDecimal totalPrice = orderItems.stream()
+                .map(item ->
+                        item.getPrice().multiply(BigDecimal.valueOf(
+                                item.getQuantity()
+                        )))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        //change later with WebClient
+        BigDecimal freight = BigDecimal.ZERO;
+
+        order.addOrderItems(orderItems, totalPrice, freight);
         orderRepository.save(order);
         orderItemRepository.saveAll(orderItems);
 
@@ -185,21 +195,12 @@ public class OrderService {
     }
 
     private OrderResponse toResponse(Order order){
-        List<OrderItem> orderItems = order.getOrderItems();
-
-        BigDecimal totalPrice = orderItems.stream()
-                .map(item ->
-                        item.getPrice().multiply(BigDecimal.valueOf(
-                                item.getQuantity()
-                        )))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         return new OrderResponse(
                 order.getId(),
                 order.getStatus(),
-                totalPrice,
+                order.getPrice().add(order.getFreight()),
 
-                orderItems
+                order.getOrderItems()
                         .stream()
                         .map(this::toItemResponse)
                         .toList(),

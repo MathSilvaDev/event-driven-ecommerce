@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +33,12 @@ public class Order {
             orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal freight;
+
     @Enumerated(value = EnumType.STRING)
     @Setter
     private OrderStatus status;
@@ -45,7 +52,10 @@ public class Order {
         this.status = OrderStatus.PENDING_PAYMENT;
     }
 
-    public void addOrderItems(Collection<? extends OrderItem> orderItems){
+    public void addOrderItems(Collection<? extends OrderItem> orderItems,
+                              BigDecimal price, BigDecimal freight){
         this.orderItems.addAll(orderItems);
+        this.price = price;
+        this.freight = freight;
     }
 }
