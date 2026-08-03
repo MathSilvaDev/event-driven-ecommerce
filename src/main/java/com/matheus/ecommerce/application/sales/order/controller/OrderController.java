@@ -56,7 +56,7 @@ public class OrderController {
                 .body(orderService.createOrder(userId));
     }
 
-    @PostMapping("/{id}/simulate-payment")
+    @PostMapping("/simulate-payment/{id}")
     public ResponseEntity<Void> simulatePayment(@AuthenticationPrincipal Jwt jwt,
                                                 @PathVariable Long id){
         UUID userId = AuthUtils.getUserIdByJwt(jwt);
@@ -72,7 +72,7 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/simulate-delivered")
+    @PostMapping("/simulate-delivered/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> simulateDelivered(@PathVariable Long id){
         orderService.simulateDelivered(id);
@@ -83,6 +83,12 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> changePaidOrderToPreparing(@RequestBody List<Long> orderIds){
         orderService.changePaidOrderToPreparing(orderIds);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/cancel/{id}")
+    public ResponseEntity<Void> cancelOrderIfIsNotPaid(@PathVariable Long id){
+        orderService.cancelOrderIfIsNotPaid(id);
         return ResponseEntity.noContent().build();
     }
 }

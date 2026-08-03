@@ -1,4 +1,4 @@
-package com.matheus.ecommerce.application.common;
+package com.matheus.ecommerce.application.auth;
 
 import com.matheus.ecommerce.domain.auth.entity.Role;
 import com.matheus.ecommerce.domain.auth.entity.User;

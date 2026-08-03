@@ -22,6 +22,10 @@ public class OrderProducer {
         sendTemplate("order-paid", orderId);
     }
 
+    public void sendOrderCanceled(Long orderId){
+        sendTemplate("order-canceled", orderId);
+    }
+
     public void sendOrderExpired(Long orderId){
         sendTemplate("order-expired", orderId);
     }

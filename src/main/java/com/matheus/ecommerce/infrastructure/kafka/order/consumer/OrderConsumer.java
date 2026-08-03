@@ -25,6 +25,14 @@ public class OrderConsumer {
     }
 
     @KafkaListener(
+            topics = "order-canceled",
+            groupId = "order-group"
+    )
+    public void canceledConsume(Long orderId){
+        log.info("---ORDER_CANCELED---ID: {}", orderId);
+    }
+
+    @KafkaListener(
             topics = "order-expired",
             groupId = "order-group"
     )

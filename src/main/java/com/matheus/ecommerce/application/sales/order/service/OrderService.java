@@ -174,6 +174,16 @@ public class OrderService {
         orderProducer.sendOrderDelivered(id);
     }
 
+    @Transactional
+    public void cancelOrderIfIsNotPaid(Long id){
+        Order order = orderRepository.findByIdAndStatus(id, OrderStatus.PENDING_PAYMENT)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "OrderStatus is not PENDING_PAYMENT"));
+
+        order.setStatus(OrderStatus.CANCELED);
+        orderProducer.sendOrderCanceled(id);
+    }
+
     private OrderResponse toResponse(Order order){
         List<OrderItem> orderItems = order.getOrderItems();
 

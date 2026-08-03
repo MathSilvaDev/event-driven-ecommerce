@@ -1,6 +1,6 @@
 package com.matheus.ecommerce.application.sales.order.service;
 
-import com.matheus.ecommerce.application.common.UtilsTest;
+import com.matheus.ecommerce.application.auth.UtilsTest;
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
@@ -16,7 +16,6 @@ import com.matheus.ecommerce.infrastructure.kafka.order.producer.OrderProducer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;

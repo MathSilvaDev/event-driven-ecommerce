@@ -1,6 +1,6 @@
 package com.matheus.ecommerce.application.sales.cart.service;
 
-import com.matheus.ecommerce.application.common.UtilsTest;
+import com.matheus.ecommerce.application.auth.UtilsTest;
 import com.matheus.ecommerce.application.sales.cart.dto.request.ChangeItemQuantityRequest;
 import com.matheus.ecommerce.application.sales.cart.dto.request.CreateCartItemRequest;
 import com.matheus.ecommerce.application.sales.cart.dto.response.CartItemResponse;
@@ -23,7 +23,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
