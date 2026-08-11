@@ -289,6 +289,5 @@ class OrderServiceTest {
             Mockito.verify(orderRepository).findByIdAndUser_IdAndStatus(
                     1L, userId, OrderStatus.PENDING_PAYMENT);
         }
-
     }
 }
