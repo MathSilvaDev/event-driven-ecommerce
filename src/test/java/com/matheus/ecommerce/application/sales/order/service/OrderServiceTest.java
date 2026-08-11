@@ -1,6 +1,6 @@
 package com.matheus.ecommerce.application.sales.order.service;
 
-import com.matheus.ecommerce.application.common.UtilsTest;
+import com.matheus.ecommerce.application.auth.UtilsTest;
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
@@ -20,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.exceptions.misusing.PotentialStubbingProblem;
-import org.mockito.internal.verification.Times;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -251,5 +250,30 @@ class OrderServiceTest {
 
             return orders;
         }
+    }
+
+    @Nested
+    class CancelOrderIfIsNotPaid{
+
+        @Test
+        void shouldCancelOrderIfIsNotPaid(){
+            User user = UtilsTest.newUser();
+            Order order = new Order(user);
+
+            Mockito.when(orderRepository.findByIdAndUser_IdAndStatus(
+                    1L, user.getId(), OrderStatus.PENDING_PAYMENT))
+                    .thenReturn(Optional.of(order));
+
+            assertEquals(OrderStatus.PENDING_PAYMENT, order.getStatus());
+
+            orderService.cancelOrderIfIsNotPaid(user.getId(), 1L);
+
+            assertEquals(OrderStatus.CANCELED, order.getStatus());
+
+            Mockito.verify(orderRepository).findByIdAndUser_IdAndStatus(
+                    1L, user.getId(), OrderStatus.PENDING_PAYMENT);
+            Mockito.verify(orderProducer).sendOrderCanceled(Mockito.any());
+        }
+
     }
 }
