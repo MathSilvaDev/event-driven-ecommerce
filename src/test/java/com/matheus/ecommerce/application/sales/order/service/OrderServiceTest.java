@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.exceptions.misusing.PotentialStubbingProblem;
 import org.mockito.internal.verification.Times;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -216,7 +217,17 @@ class OrderServiceTest {
                     .sendOrderToPreparing(Mockito.any());
         }
 
+        @Test
+        void shouldThrowIfOrderStatusIsNotPaid(){
+            List<Long> ordersIds = List.of(1L, 2L, 3L, 4L);
+            List<Order> orders = genOrders(4);
 
+            Mockito.when(orderRepository.findAllByIdInAndStatus(ordersIds, OrderStatus.CANCELED))
+                    .thenReturn(orders);
+
+            assertThrows(PotentialStubbingProblem.class,
+                    () -> orderService.changePaidOrderToPreparing(ordersIds));
+        }
 
         private List<Order> genOrders(int quantity){
             List<Order> orders = new ArrayList<>();
