@@ -94,21 +94,19 @@ public class CartService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "cartItem not found"));
 
-        int newQuantity = cartItem.getQuantity() + request.quantity();
-
-        if(newQuantity <= 0){
+        if(request.quantity() <= 0){
             user.getCart().removeItem(cartItem);
             cartItemRepository.delete(cartItem);
 
             return;
         }
 
-        if(!cartItem.getProduct().isAvailable(newQuantity)){
+        if(!cartItem.getProduct().isAvailable(request.quantity())){
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Product quantity unavailable");
         }
 
-        cartItem.addQuantity(request.quantity());
+        cartItem.setQuantity(request.quantity());
     }
 
     @Transactional

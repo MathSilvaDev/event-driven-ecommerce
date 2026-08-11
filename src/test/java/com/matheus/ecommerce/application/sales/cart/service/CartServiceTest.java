@@ -207,7 +207,7 @@ class CartServiceTest {
 
             cartService.changeCartItemQuantity(user.getId(), request);
 
-            assertEquals(5, cartItem.getQuantity());
+            assertEquals(2, cartItem.getQuantity());
 
             Mockito.verify(userRepository).findById(user.getId());
             Mockito.verify(cartItemRepository)
@@ -242,7 +242,7 @@ class CartServiceTest {
         @Test
         void shouldThrowIfQuantityIsUnavailable(){
             User user = UtilsTest.newUser();
-            Product product = UtilsTest.newProduct(5);
+            Product product = UtilsTest.newProduct(2);
             CartItem cartItem = new CartItem(
                     user.getCart(), product, 3);
 
