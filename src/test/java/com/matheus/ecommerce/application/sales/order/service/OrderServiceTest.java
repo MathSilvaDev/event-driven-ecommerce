@@ -229,6 +229,18 @@ class OrderServiceTest {
                     () -> orderService.changePaidOrderToPreparing(ordersIds));
         }
 
+        @Test
+        void shouldThrowIfOrdersIsEmpty(){
+            List<Long> ordersIds = new ArrayList<>();
+            List<Order> orders = new ArrayList<>();
+
+            Mockito.when(orderRepository.findAllByIdInAndStatus(ordersIds, OrderStatus.PAID))
+                    .thenReturn(orders);
+
+            assertThrows(ResponseStatusException.class,
+                    () -> orderService.changePaidOrderToPreparing(ordersIds));
+        }
+
         private List<Order> genOrders(int quantity){
             List<Order> orders = new ArrayList<>();
 
