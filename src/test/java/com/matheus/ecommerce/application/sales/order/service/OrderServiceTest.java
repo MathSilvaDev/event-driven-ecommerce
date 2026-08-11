@@ -275,5 +275,20 @@ class OrderServiceTest {
             Mockito.verify(orderProducer).sendOrderCanceled(Mockito.any());
         }
 
+        @Test
+        void shouldThrowIfOrderDoesNotExist(){
+            UUID userId = UUID.randomUUID();
+
+            Mockito.when(orderRepository.findByIdAndUser_IdAndStatus(
+                            1L, userId, OrderStatus.PENDING_PAYMENT))
+                    .thenReturn(Optional.empty());
+
+            assertThrows(ResponseStatusException.class,
+                    () -> orderService.cancelOrderIfIsNotPaid(userId, 1L));
+
+            Mockito.verify(orderRepository).findByIdAndUser_IdAndStatus(
+                    1L, userId, OrderStatus.PENDING_PAYMENT);
+        }
+
     }
 }
