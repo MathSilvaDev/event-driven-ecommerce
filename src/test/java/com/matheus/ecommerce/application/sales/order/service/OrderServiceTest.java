@@ -1,6 +1,6 @@
 package com.matheus.ecommerce.application.sales.order.service;
 
-import com.matheus.ecommerce.application.auth.UtilsTest;
+import com.matheus.ecommerce.application.common.UtilsTest;
 import com.matheus.ecommerce.application.sales.order.dto.response.OrderResponse;
 import com.matheus.ecommerce.domain.auth.entity.User;
 import com.matheus.ecommerce.domain.auth.repository.UserRepository;
@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.internal.verification.Times;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -69,6 +70,7 @@ class OrderServiceTest {
             assertEquals(1, user.getCart().getCartItems().size());
             assertEquals(1, user.getOrders().size());
             assertEquals(2, user.getOrders().getFirst().getOrderItems().size());
+            assertEquals(BigDecimal.valueOf(20), response.totalValue());
 
             List<CartItem> cartItemsSelected = cartItems.stream()
                     .filter(CartItem::isSelected)
@@ -191,6 +193,40 @@ class OrderServiceTest {
             assertEquals(1 ,response.getSize());
 
             Mockito.verify(orderRepository).findAll(Mockito.any(Pageable.class));
+        }
+    }
+
+    @Nested
+    class ChangePaidOrderToPreparing{
+
+        @Test
+        void shouldChangeOrderStatusPaidToPreparing(){
+            List<Long> ordersIds = List.of(1L, 2L, 3L, 4L);
+            List<Order> orders = genOrders(4);
+
+            Mockito.when(orderRepository.findAllByIdInAndStatus(ordersIds, OrderStatus.PAID))
+                    .thenReturn(orders);
+
+            orderService.changePaidOrderToPreparing(ordersIds);
+
+            assertEquals(4, orders.size());
+
+            Mockito.verify(orderRepository).findAllByIdInAndStatus(ordersIds, OrderStatus.PAID);
+            Mockito.verify(orderProducer, Mockito.times(4))
+                    .sendOrderToPreparing(Mockito.any());
+        }
+
+
+
+        private List<Order> genOrders(int quantity){
+            List<Order> orders = new ArrayList<>();
+
+            for(int i = 0; i < quantity; i++){
+                Order order = new Order(UtilsTest.newUser());
+                orders.add(order);
+            }
+
+            return orders;
         }
     }
 }

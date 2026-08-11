@@ -3,7 +3,7 @@ package com.matheus.ecommerce.application.catalog.product.service;
 import com.matheus.ecommerce.application.catalog.product.dto.request.CreateProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.request.EditProductRequest;
 import com.matheus.ecommerce.application.catalog.product.dto.response.ProductResponse;
-import com.matheus.ecommerce.application.auth.UtilsTest;
+import com.matheus.ecommerce.application.common.UtilsTest;
 import com.matheus.ecommerce.domain.catalog.product.entity.Product;
 import com.matheus.ecommerce.domain.catalog.product.repository.ProductRepository;
 import org.junit.jupiter.api.Nested;

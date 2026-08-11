@@ -1,4 +1,4 @@
-package com.matheus.ecommerce.application.auth.dto.request;
+package com.matheus.ecommerce.application.common.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

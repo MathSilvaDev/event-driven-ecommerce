@@ -1,11 +1,11 @@
-package com.matheus.ecommerce.application.auth.controller;
+package com.matheus.ecommerce.application.common.controller;
 
-import com.matheus.ecommerce.application.auth.dto.request.LoginRequest;
-import com.matheus.ecommerce.application.auth.dto.request.RefreshRequest;
-import com.matheus.ecommerce.application.auth.dto.request.RegisterRequest;
-import com.matheus.ecommerce.application.auth.dto.response.LoginResponse;
-import com.matheus.ecommerce.application.auth.dto.response.RefreshResponse;
-import com.matheus.ecommerce.application.auth.service.AuthService;
+import com.matheus.ecommerce.application.common.dto.request.LoginRequest;
+import com.matheus.ecommerce.application.common.dto.request.RefreshRequest;
+import com.matheus.ecommerce.application.common.dto.request.RegisterRequest;
+import com.matheus.ecommerce.application.common.dto.response.LoginResponse;
+import com.matheus.ecommerce.application.common.dto.response.RefreshResponse;
+import com.matheus.ecommerce.application.common.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
