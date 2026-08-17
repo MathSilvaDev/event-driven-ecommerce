@@ -12,6 +12,7 @@ import com.matheus.ecommerce.domain.sales.order.entity.OrderItem;
 import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
+import com.matheus.ecommerce.infrastructure.kafka.order.dto.OrderKafkaResponse;
 import com.matheus.ecommerce.infrastructure.kafka.order.producer.OrderProducer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -81,7 +82,11 @@ class OrderServiceTest {
             Mockito.verify(cartItemRepository).deleteAll(cartItemsSelected);
 
             Mockito.verify(orderProducer)
-                    .sendOrderCreated(response.id());
+                    .sendOrderStatus(
+                        new OrderKafkaResponse(
+                                response.id(), 
+                                response.status())
+                    );
 
         }
 
@@ -213,7 +218,7 @@ class OrderServiceTest {
 
             Mockito.verify(orderRepository).findAllByIdInAndStatus(ordersIds, OrderStatus.PAID);
             Mockito.verify(orderProducer, Mockito.times(4))
-                    .sendOrderToPreparing(Mockito.any());
+                    .sendOrderStatus(Mockito.any());
         }
 
         @Test
@@ -272,7 +277,7 @@ class OrderServiceTest {
 
             Mockito.verify(orderRepository).findByIdAndUser_IdAndStatus(
                     1L, user.getId(), OrderStatus.PENDING_PAYMENT);
-            Mockito.verify(orderProducer).sendOrderCanceled(Mockito.any());
+            Mockito.verify(orderProducer).sendOrderStatus(Mockito.any());
         }
 
         @Test

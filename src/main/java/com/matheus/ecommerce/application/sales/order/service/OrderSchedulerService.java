@@ -1,10 +1,9 @@
 package com.matheus.ecommerce.application.sales.order.service;
 
 import com.matheus.ecommerce.domain.sales.order.entity.Order;
-import com.matheus.ecommerce.domain.sales.order.entity.OrderItem;
 import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
-import com.matheus.ecommerce.infrastructure.kafka.order.consumer.OrderConsumer;
+import com.matheus.ecommerce.infrastructure.kafka.order.dto.OrderKafkaResponse;
 import com.matheus.ecommerce.infrastructure.kafka.order.producer.OrderProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,10 @@ public class OrderSchedulerService {
                 order.setStatus(OrderStatus.EXPIRED);
                 OrderService.returnOrder(order);
 
-                orderProducer.sendOrderExpired(order.getId());
+                orderProducer.sendOrderStatus(
+                    new OrderKafkaResponse(
+                        order.getId(), 
+                        order.getStatus()));
         });
     }
 

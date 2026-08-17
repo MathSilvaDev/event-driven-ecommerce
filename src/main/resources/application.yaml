@@ -7,9 +7,9 @@ spring:
     address: 0.0.0.0
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecommerce_db
-    username: root
-    password: root
+    url: ${SPRINGBOOT_DATASOURCE_URL}
+    username: ${SPRINGBOOT_DATASOURCE_USERNAME}
+    password: ${SPRINGBOOT_DATASOURCE_PASSWORD}
 
   jpa:
     hibernate:
@@ -17,15 +17,30 @@ spring:
 
   security:
     jwt:
-      private-key: classpath:keys/jwt-private.key
-      public-key: classpath:keys/jwt-public.key
+      private-key: ${JWT_PRIVATE_KEY}
+      public-key: ${JWT_PUBLIC_KEY}
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER}
+    
+    properties:
+      security.protocol: SSL
+      
+      ssl.keystore.type: PEM
+      ssl.keystore.certificate.chain: ${KAFKA_ACCESS_CERTIFICATE}
+      ssl.keystore.key: ${KAFKA_ACCESS_KEY}
+
+      ssl.truststore.type: PEM
+      ssl.truststore.certificates: ${KAFKA_CA_CERTIFICATE}
+        
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: com.matheus.ecommerce.*

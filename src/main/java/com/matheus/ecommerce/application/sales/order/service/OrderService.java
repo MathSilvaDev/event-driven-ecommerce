@@ -12,6 +12,7 @@ import com.matheus.ecommerce.domain.sales.order.enums.OrderStatus;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderItemRepository;
 import com.matheus.ecommerce.domain.sales.order.repository.OrderRepository;
 import com.matheus.ecommerce.infrastructure.exception.auth.UserNotFoundException;
+import com.matheus.ecommerce.infrastructure.kafka.order.dto.OrderKafkaResponse;
 import com.matheus.ecommerce.infrastructure.kafka.order.producer.OrderProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -90,7 +91,10 @@ public class OrderService {
         user.getCart().removeItems(cartItems);
         cartItemRepository.deleteAll(cartItems);
 
-        orderProducer.sendOrderCreated(order.getId());
+        orderProducer.sendOrderStatus(
+                    new OrderKafkaResponse(
+                        order.getId(), 
+                        order.getStatus()));
 
         return toResponse(order);
     }
@@ -139,7 +143,10 @@ public class OrderService {
 
         orders.forEach(order -> {
             order.setStatus(OrderStatus.PREPARING);
-            orderProducer.sendOrderToPreparing(order.getId());
+            orderProducer.sendOrderStatus(
+                    new OrderKafkaResponse(
+                        order.getId(), 
+                        order.getStatus()));
         });
     }
 
@@ -151,7 +158,10 @@ public class OrderService {
                         HttpStatus.BAD_REQUEST, "This Order(Status) in not (PENDING_PAYMENT)"));
 
         order.setStatus(OrderStatus.PAID);
-        orderProducer.sendOrderPaid(order.getId());
+        orderProducer.sendOrderStatus(
+                    new OrderKafkaResponse(
+                        order.getId(), 
+                        order.getStatus()));
     }
 
     @Transactional
@@ -166,7 +176,10 @@ public class OrderService {
 
         orders.forEach(order -> {
             order.setStatus(OrderStatus.DISPATCHED);
-            orderProducer.sendOrderShipment(order.getId());
+            orderProducer.sendOrderStatus(
+                    new OrderKafkaResponse(
+                        order.getId(), 
+                        order.getStatus()));
         });
     }
 
@@ -177,7 +190,10 @@ public class OrderService {
                         HttpStatus.BAD_REQUEST, "OrderStatus is not DISPATCHED"));
 
         orders.setStatus(OrderStatus.DELIVERED);
-        orderProducer.sendOrderDelivered(id);
+        orderProducer.sendOrderStatus(
+                    new OrderKafkaResponse(
+                        id, 
+                        OrderStatus.DELIVERED));
     }
 
     @Transactional
@@ -190,7 +206,10 @@ public class OrderService {
         order.setStatus(OrderStatus.CANCELED);
         returnOrder(order);
 
-        orderProducer.sendOrderCanceled(id);
+        orderProducer.sendOrderStatus(
+                    new OrderKafkaResponse(
+                        id, 
+                        OrderStatus.CANCELED));
     }
 
     protected static void returnOrder(Order order) {

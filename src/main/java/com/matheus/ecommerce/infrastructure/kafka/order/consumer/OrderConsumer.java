@@ -4,63 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import com.matheus.ecommerce.infrastructure.kafka.order.dto.OrderKafkaResponse;
+
 @Service
 @Slf4j
 public class OrderConsumer {
 
     @KafkaListener(
-            topics = "order-created",
+            topics = "order-status",
             groupId = "order-group"
     )
-    public void createdConsume(Long orderId){
-        log.info("---RECEIVED_ORDER---ID: {}", orderId);
-    }
-
-    @KafkaListener(
-            topics = "order-paid",
-            groupId = "order-group"
-    )
-    public void paidConsume(Long orderId){
-        log.info("---ORDER_PAID---ID: {}", orderId);
-    }
-
-    @KafkaListener(
-            topics = "order-canceled",
-            groupId = "order-group"
-    )
-    public void canceledConsume(Long orderId){
-        log.info("---ORDER_CANCELED---ID: {}", orderId);
-    }
-
-    @KafkaListener(
-            topics = "order-expired",
-            groupId = "order-group"
-    )
-    public void expiredConsume(Long orderId){
-        log.info("---ORDER_EXPIRED_DUE_TO_NON_PAYMENT---ID: {}", orderId);
-    }
-
-    @KafkaListener(
-            topics = "order-to-preparing",
-            groupId = "order-group"
-    )
-    public void toPreparingConsume(Long orderId){
-        log.info("---ORDER_STATUS_TO_PREPARING---ID: {}", orderId);
-    }
-
-    @KafkaListener(
-            topics = "order-shipment",
-            groupId = "order-group"
-    )
-    public void shipmentConsume(Long orderId){
-        log.info("---ORDER_DISPATCHED---ID: {}", orderId);
-    }
-
-    @KafkaListener(
-            topics = "order-delivered",
-            groupId = "order-group"
-    )
-    public void deliveredConsume(Long orderId){
-        log.info("---ORDER_DELIVERED---ID: {}", orderId);
+    public void reciveOrderStatus(OrderKafkaResponse response){
+        log.info("---ORDER-STATUS---: {}", response);
     }
 }
